@@ -1,7 +1,7 @@
 CMakeFiles/digital-logic-sim.dir/src/engine/Simulator.cpp.o: \
- /home/nabaraj/Projects/dl/src/engine/Simulator.cpp \
+ /home/nabaraj/Projects/copy/src/engine/Simulator.cpp \
  /usr/include/stdc-predef.h \
- /home/nabaraj/Projects/dl/src/engine/Simulator.h \
+ /home/nabaraj/Projects/copy/src/engine/Simulator.h \
  /usr/include/SFML/Graphics.hpp /usr/include/SFML/Graphics/BlendMode.hpp \
  /usr/include/SFML/Graphics/Export.hpp /usr/include/SFML/Config.hpp \
  /usr/include/SFML/Graphics/CircleShape.hpp \
@@ -258,8 +258,8 @@ CMakeFiles/digital-logic-sim.dir/src/engine/Simulator.cpp.o: \
  /usr/include/c++/15.1.1/bits/stl_tree.h \
  /usr/include/c++/15.1.1/bits/stl_map.h \
  /usr/include/c++/15.1.1/bits/stl_multimap.h \
- /home/nabaraj/Projects/dl/src/engine/Gate.h \
- /home/nabaraj/Projects/dl/src/engine/Wire.h \
+ /home/nabaraj/Projects/copy/src/engine/Gate.h \
+ /home/nabaraj/Projects/copy/src/engine/Wire.h \
  /usr/include/c++/15.1.1/queue /usr/include/c++/15.1.1/deque \
  /usr/include/c++/15.1.1/bits/stl_deque.h \
  /usr/include/c++/15.1.1/bits/deque.tcc \

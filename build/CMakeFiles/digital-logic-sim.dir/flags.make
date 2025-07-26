@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/nabaraj/Projects/dl/src
+CXX_INCLUDES = -I/home/nabaraj/Projects/copy/src
 
 CXX_FLAGS = -std=gnu++17
 

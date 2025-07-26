@@ -22,7 +22,8 @@ void Canvas::handleEvent(const sf::Event &event, const sf::RenderWindow &window)
         if (pressed->button == sf::Mouse::Button::Middle)
         {
             dragging = true;
-            lastMousePos = sf::Vector2f{(float)pressed->position.x, (float)pressed->position.y};
+            sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
+            lastMousePos = sf::Vector2f{(float)mousePixel.x, (float)mousePixel.y};
         }
     }
 
@@ -40,7 +41,8 @@ void Canvas::handleEvent(const sf::Event &event, const sf::RenderWindow &window)
     {
         if (dragging)
         {
-            sf::Vector2f newPos{(float)moved->position.x, (float)moved->position.y};
+            sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
+            sf::Vector2f newPos{(float)mousePixel.x, (float)mousePixel.y};
             sf::Vector2f delta = lastMousePos - newPos;
 
             // Scale delta by the zoom level

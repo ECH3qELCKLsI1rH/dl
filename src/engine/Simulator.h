@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <memory>
 #include <limits>
 #include "Gate.h"
 #include "Wire.h"
@@ -23,6 +24,7 @@ public:
     void deleteSelectedGates();
     void cancelSelection();
     void selectGateAt(sf::Vector2f worldPos);
+    void setFont(const sf::Font &font);
 
 private:
     std::vector<Gate> gates;
@@ -38,6 +40,13 @@ private:
     bool showTruthTable = false;
     bool showExpression = false;
 
+    // Font for UI text rendering
+    const sf::Font *currentFont = nullptr;
+    mutable std::vector<sf::Text> truthTableTexts;
+    mutable std::unique_ptr<sf::Text> expressionText;
+    mutable std::unique_ptr<sf::Text> expressionTitleText;
+    mutable std::unique_ptr<sf::Text> truthTableTitleText;
+
     // Input/Output counters for unique naming
     int inputCounter = 0;
     int outputCounter = 0;
@@ -49,5 +58,5 @@ private:
     std::string getGateSymbol(GateType type) const;
     void removeGate(size_t gateIndex);
     void removeWiresConnectedToGate(size_t gateIndex);
-    void drawSimpleText(sf::RenderWindow &window, const std::string &text, sf::Vector2f position, sf::Color color) const;
+    void setupUITexts() const;
 };

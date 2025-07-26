@@ -18,10 +18,91 @@ void ComponentPalette::setupButtons()
     {
         sf::RectangleShape button({80.f, 40.f});
         button.setPosition({20.f, 50.f + i * 50.f});
-        button.setFillColor(i == selectedIndex ? sf::Color::Yellow : sf::Color::White);
+
+        // Set color based on state: selected (yellow), hovered (light gray), normal (white)
+        if (i == selectedIndex)
+        {
+            button.setFillColor(sf::Color::Yellow);
+        }
+        else if (i == hoveredIndex)
+        {
+            button.setFillColor(sf::Color(220, 220, 220)); // Light gray for hover
+        }
+        else
+        {
+            button.setFillColor(sf::Color::White);
+        }
+
         button.setOutlineThickness(2.f);
         button.setOutlineColor(sf::Color::Black);
         buttons.push_back(button);
+    }
+
+    // Setup texts if font is available
+    if (currentFont != nullptr)
+    {
+        setupTexts();
+    }
+}
+
+void ComponentPalette::setFont(const sf::Font &font)
+{
+    currentFont = &font;
+    setupTexts();
+}
+
+void ComponentPalette::setupTexts()
+{
+    if (currentFont == nullptr)
+        return;
+
+    // Clear existing texts
+    buttonLabels.clear();
+    instructionTexts.clear();
+
+    // Setup button labels
+    for (size_t i = 0; i < gateTypes.size(); ++i)
+    {
+        sf::Text label(*currentFont);
+        label.setString(getGateTypeName(gateTypes[i]));
+        label.setCharacterSize(14);
+        label.setFillColor(sf::Color::Black);
+
+        // Center the label in the button
+        sf::Vector2f buttonPos = buttons[i].getPosition();
+        sf::Vector2f buttonSize = buttons[i].getSize();
+        sf::FloatRect textBounds = label.getLocalBounds();
+        label.setPosition({buttonPos.x + (buttonSize.x - textBounds.size.x) / 2,
+                           buttonPos.y + (buttonSize.y - textBounds.size.y) / 2});
+
+        buttonLabels.push_back(label);
+    }
+
+    // Setup title text
+    titleText = sf::Text(*currentFont);
+    titleText->setString("Components");
+    titleText->setCharacterSize(16);
+    titleText->setFillColor(sf::Color::White);
+    titleText->setPosition({15.f, 15.f});
+
+    // Setup instruction texts
+    std::vector<std::string> instructions = {
+        "Controls:",
+        "T-Truth Table",
+        "E-Expression",
+        "C-Clear",
+        "Del-Delete",
+        "Esc-Cancel",
+        "F-File Menu"};
+
+    for (size_t i = 0; i < instructions.size(); ++i)
+    {
+        sf::Text instrText(*currentFont);
+        instrText.setString(instructions[i]);
+        instrText.setCharacterSize(12);
+        instrText.setFillColor(sf::Color::Black);
+        instrText.setPosition({15.f, 350.f + i * 20.f});
+        instructionTexts.push_back(instrText);
     }
 }
 
@@ -46,12 +127,35 @@ std::string ComponentPalette::getGateTypeName(GateType type) const
 
 void ComponentPalette::handleEvent(const sf::Event &event, const sf::RenderWindow &window)
 {
+    // Always update hover state based on mouse position
+    sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
+    sf::Vector2f mousePos{(float)mousePixel.x, (float)mousePixel.y};
+
+    // Update hover state
+    int newHoveredIndex = -1;
+    if (mousePos.x <= 120.f) // Only hover in palette area
+    {
+        for (size_t i = 0; i < buttons.size(); ++i)
+        {
+            if (buttons[i].getGlobalBounds().contains(mousePos))
+            {
+                newHoveredIndex = static_cast<int>(i);
+                break;
+            }
+        }
+    }
+
+    // Update hover state and refresh buttons if it changed
+    if (newHoveredIndex != hoveredIndex)
+    {
+        hoveredIndex = newHoveredIndex;
+        setupButtons(); // Refresh button colors
+    }
+
     if (const auto *clicked = event.getIf<sf::Event::MouseButtonPressed>())
     {
         if (clicked->button == sf::Mouse::Button::Left)
         {
-            sf::Vector2f mousePos{(float)clicked->position.x, (float)clicked->position.y};
-
             // Check if click is in palette area
             if (mousePos.x <= 120.f)
             {
@@ -84,7 +188,7 @@ void ComponentPalette::draw(sf::RenderWindow &window)
     background.setFillColor(sf::Color(200, 200, 200, 200));
     window.draw(background);
 
-    // Draw title
+    // Draw title background
     sf::RectangleShape titleBg({100.f, 30.f});
     titleBg.setPosition({10.f, 10.f});
     titleBg.setFillColor(sf::Color::Black);
@@ -92,49 +196,35 @@ void ComponentPalette::draw(sf::RenderWindow &window)
     titleBg.setOutlineColor(sf::Color::White);
     window.draw(titleBg);
 
+    // Draw title text
+    if (currentFont != nullptr && titleText.has_value())
+    {
+        window.draw(titleText.value());
+    }
+
     // Draw buttons and labels
     for (size_t i = 0; i < buttons.size(); ++i)
     {
         window.draw(buttons[i]);
 
-        // Draw button label at center
-        sf::Vector2f buttonPos = buttons[i].getPosition();
-        sf::Vector2f buttonSize = buttons[i].getSize();
-
-        // Create simple text-like rectangles since we can't use sf::Text
-        std::string gateName = getGateTypeName(gateTypes[i]);
-        drawSimpleText(window, gateName,
-                       sf::Vector2f(buttonPos.x + buttonSize.x / 2 - gateName.length() * 3,
-                                    buttonPos.y + buttonSize.y / 2 - 5),
-                       sf::Color::Black);
+        // Draw button label using proper text
+        if (currentFont != nullptr && i < buttonLabels.size())
+        {
+            window.draw(buttonLabels[i]);
+        }
     }
 
-    // Draw instructions
-    drawSimpleText(window, "Controls:", sf::Vector2f(15.f, 350.f), sf::Color::Black);
-    drawSimpleText(window, "T-Truth Table", sf::Vector2f(15.f, 370.f), sf::Color::Black);
-    drawSimpleText(window, "E-Expression", sf::Vector2f(15.f, 390.f), sf::Color::Black);
-    drawSimpleText(window, "C-Clear", sf::Vector2f(15.f, 410.f), sf::Color::Black);
-    drawSimpleText(window, "Del-Delete", sf::Vector2f(15.f, 430.f), sf::Color::Black);
-    drawSimpleText(window, "Esc-Cancel", sf::Vector2f(15.f, 450.f), sf::Color::Black);
-    drawSimpleText(window, "F-File Menu", sf::Vector2f(15.f, 470.f), sf::Color::Black);
+    // Draw instructions using proper text
+    if (currentFont != nullptr)
+    {
+        for (const auto &instrText : instructionTexts)
+        {
+            window.draw(instrText);
+        }
+    }
 }
 
 GateType ComponentPalette::getSelectedGateType() const
 {
     return gateTypes[selectedIndex];
-}
-
-void ComponentPalette::drawSimpleText(sf::RenderWindow &window, const std::string &text, sf::Vector2f position, sf::Color color)
-{
-    // Draw simple pixel-based text using rectangles
-    for (size_t i = 0; i < text.length(); ++i)
-    {
-        if (text[i] != ' ' && text[i] != '-')
-        {
-            sf::RectangleShape charRect({6.f, 8.f});
-            charRect.setPosition({position.x + i * 7.f, position.y});
-            charRect.setFillColor(color);
-            window.draw(charRect);
-        }
-    }
 }

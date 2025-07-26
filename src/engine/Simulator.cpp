@@ -10,7 +10,9 @@ void Simulator::handleEvent(const sf::Event &event, const sf::RenderWindow &wind
     {
         if (clicked->button == sf::Mouse::Button::Left)
         {
-            sf::Vector2f mousePos{(float)clicked->position.x, (float)clicked->position.y};
+            // Convert mouse position to window coordinates
+            sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
+            sf::Vector2f mousePos{(float)mousePixel.x, (float)mousePixel.y};
 
             // Check for close button clicks in UI elements (these use screen coordinates)
             if (showExpression)
@@ -37,7 +39,7 @@ void Simulator::handleEvent(const sf::Event &event, const sf::RenderWindow &wind
             if (mousePos.x <= 120.f)
                 return;
 
-            sf::Vector2f worldPos = window.mapPixelToCoords(sf::Vector2i(mousePos), view);
+            sf::Vector2f worldPos = window.mapPixelToCoords(mousePixel, view);
 
             // Check for gate/pin selection
             bool hitGate = false;
@@ -362,11 +364,24 @@ void Simulator::drawUI(sf::RenderWindow &window) const
         expressionBg.setOutlineColor(sf::Color::White);
         window.draw(expressionBg);
 
-        // Draw title
-        drawSimpleText(window, "Logical Expression:", sf::Vector2f(rightSide + 10.f, 60.f), sf::Color::White);
+        // Draw title and expression using proper text
+        if (currentFont != nullptr && expressionTitleText && expressionText)
+        {
+            // Update positions for text elements
+            expressionTitleText->setPosition({rightSide + 10.f, 60.f});
+            expressionText->setPosition({rightSide + 10.f, 80.f});
 
-        // Draw expression text
-        drawSimpleText(window, currentExpression, sf::Vector2f(rightSide + 10.f, 80.f), sf::Color::Yellow);
+            window.draw(*expressionTitleText);
+            window.draw(*expressionText);
+
+            // Instructions text
+            sf::Text instructText(*currentFont);
+            instructText.setString("Press E again or click CLOSE to hide");
+            instructText.setCharacterSize(10);
+            instructText.setFillColor(sf::Color(128, 128, 128));
+            instructText.setPosition({rightSide + 10.f, 140.f});
+            window.draw(instructText);
+        }
 
         // Draw close button
         sf::RectangleShape closeBtn({60.f, 20.f});
@@ -375,10 +390,16 @@ void Simulator::drawUI(sf::RenderWindow &window) const
         closeBtn.setOutlineThickness(1.f);
         closeBtn.setOutlineColor(sf::Color::White);
         window.draw(closeBtn);
-        drawSimpleText(window, "CLOSE", sf::Vector2f(rightSide + 320.f, 60.f), sf::Color::White);
 
-        // Instructions
-        drawSimpleText(window, "Press E again or click CLOSE to hide", sf::Vector2f(rightSide + 10.f, 140.f), sf::Color(128, 128, 128));
+        if (currentFont != nullptr)
+        {
+            sf::Text closeText(*currentFont);
+            closeText.setString("CLOSE");
+            closeText.setCharacterSize(12);
+            closeText.setFillColor(sf::Color::White);
+            closeText.setPosition({rightSide + 320.f, 60.f});
+            window.draw(closeText);
+        }
     }
 
     if (showTruthTable && !truthTable.empty())
@@ -391,8 +412,12 @@ void Simulator::drawUI(sf::RenderWindow &window) const
         tableBg.setOutlineColor(sf::Color::White);
         window.draw(tableBg);
 
-        // Draw title
-        drawSimpleText(window, "Truth Table:", sf::Vector2f(rightSide + 10.f, 210.f), sf::Color::White);
+        // Draw title using proper text
+        if (currentFont != nullptr && truthTableTitleText)
+        {
+            truthTableTitleText->setPosition({rightSide + 10.f, 210.f});
+            window.draw(*truthTableTitleText);
+        }
 
         // Draw close button
         sf::RectangleShape closeBtn({60.f, 20.f});
@@ -401,23 +426,46 @@ void Simulator::drawUI(sf::RenderWindow &window) const
         closeBtn.setOutlineThickness(1.f);
         closeBtn.setOutlineColor(sf::Color::White);
         window.draw(closeBtn);
-        drawSimpleText(window, "CLOSE", sf::Vector2f(rightSide + 320.f, 210.f), sf::Color::White);
 
-        // Draw table headers and data
-        float yPos = 230.f;
-        for (size_t i = 0; i < std::min((size_t)15, truthTable.size()); ++i)
+        if (currentFont != nullptr)
         {
-            drawSimpleText(window, truthTable[i], sf::Vector2f(rightSide + 10.f, yPos), sf::Color::White);
-            yPos += 18.f;
+            sf::Text closeText(*currentFont);
+            closeText.setString("CLOSE");
+            closeText.setCharacterSize(12);
+            closeText.setFillColor(sf::Color::White);
+            closeText.setPosition({rightSide + 320.f, 210.f});
+            window.draw(closeText);
         }
 
-        if (truthTable.size() > 15)
+        // Draw table headers and data using proper text
+        if (currentFont != nullptr)
         {
-            drawSimpleText(window, "... (showing first 15 rows)", sf::Vector2f(rightSide + 10.f, yPos), sf::Color(128, 128, 128));
-        }
+            float yPos = 230.f;
+            for (size_t i = 0; i < std::min((size_t)15, truthTableTexts.size()); ++i)
+            {
+                truthTableTexts[i].setPosition({rightSide + 10.f, yPos});
+                window.draw(truthTableTexts[i]);
+                yPos += 18.f;
+            }
 
-        // Instructions
-        drawSimpleText(window, "Press T again or click CLOSE to hide", sf::Vector2f(rightSide + 10.f, 200.f + tableHeight - 20.f), sf::Color(128, 128, 128));
+            if (truthTable.size() > 15)
+            {
+                sf::Text moreText(*currentFont);
+                moreText.setString("... (showing first 15 rows)");
+                moreText.setCharacterSize(10);
+                moreText.setFillColor(sf::Color(128, 128, 128));
+                moreText.setPosition({rightSide + 10.f, yPos});
+                window.draw(moreText);
+            }
+
+            // Instructions
+            sf::Text instructText(*currentFont);
+            instructText.setString("Press T again or click CLOSE to hide");
+            instructText.setCharacterSize(10);
+            instructText.setFillColor(sf::Color(128, 128, 128));
+            instructText.setPosition({rightSide + 10.f, 200.f + tableHeight - 20.f});
+            window.draw(instructText);
+        }
     }
 
     window.setView(originalView);
@@ -480,6 +528,7 @@ void Simulator::generateLogicalExpression()
     // Generate expression for the first output
     currentExpression = generateExpressionForGate(outputs[0], expressions);
     showExpression = true;
+    setupUITexts();
 
     std::cout << "Generated expression: " << currentExpression << std::endl;
 }
@@ -657,23 +706,46 @@ void Simulator::generateTruthTable()
     }
 
     showTruthTable = true;
+    setupUITexts();
 
     std::cout << "Generated truth table with " << combinations << " rows" << std::endl;
 }
 
-void Simulator::drawSimpleText(sf::RenderWindow &window, const std::string &text, sf::Vector2f position, sf::Color color) const
+void Simulator::setFont(const sf::Font &font)
 {
-    // Draw simple pixel-based text using rectangles
-    for (size_t i = 0; i < text.length(); ++i)
+    currentFont = &font;
+    setupUITexts();
+}
+
+void Simulator::setupUITexts() const
+{
+    if (currentFont == nullptr)
+        return;
+
+    // Setup expression texts
+    expressionTitleText = std::make_unique<sf::Text>(*currentFont);
+    expressionTitleText->setString("Logical Expression:");
+    expressionTitleText->setCharacterSize(16);
+    expressionTitleText->setFillColor(sf::Color::White);
+
+    expressionText = std::make_unique<sf::Text>(*currentFont);
+    expressionText->setString(currentExpression);
+    expressionText->setCharacterSize(14);
+    expressionText->setFillColor(sf::Color::Yellow);
+
+    // Setup truth table texts
+    truthTableTitleText = std::make_unique<sf::Text>(*currentFont);
+    truthTableTitleText->setString("Truth Table:");
+    truthTableTitleText->setCharacterSize(16);
+    truthTableTitleText->setFillColor(sf::Color::White);
+
+    truthTableTexts.clear();
+    for (const auto &row : truthTable)
     {
-        if (text[i] != ' ')
-        {
-            sf::RectangleShape charRect({5.f, 7.f});
-            charRect.setPosition({position.x + i * 6.f, position.y});
-            charRect.setFillColor(color);
-            charRect.setOutlineThickness(0.5f);
-            charRect.setOutlineColor(sf::Color::Black);
-            window.draw(charRect);
-        }
+        sf::Text rowText(*currentFont);
+        rowText.setString(row);
+        rowText.setCharacterSize(12);
+        rowText.setFillColor(sf::Color::White);
+        truthTableTexts.push_back(rowText);
     }
 }
