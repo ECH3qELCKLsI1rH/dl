@@ -11,11 +11,9 @@ public:
     void update();
     void draw(sf::RenderWindow &window);
 
-    sf::View &getView() { return view; }
-    void setView(const sf::View &v) { view = v; }
+    sf::View view; // Made public for simulator access
 
 private:
-    sf::View view;
     sf::Vector2f lastMousePos{};
     bool dragging = false;
     Simulator simulator;

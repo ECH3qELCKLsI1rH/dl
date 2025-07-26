@@ -14,6 +14,10 @@ int main()
     ComponentPalette palette;
     Simulator simulator;
 
+    // Initialize 2 input switches for testing
+    // simulator.addInput();
+    // simulator.addInput();
+
     while (window.isOpen())
     {
         while (auto event = window.pollEvent())
@@ -33,11 +37,12 @@ int main()
             // Forward events to canvas, palette, and simulator
             canvas.handleEvent(*event);
             palette.handleEvent(*event);
-            simulator.handleEvent(*event, window, canvas.getView(), palette.getSelectedGateType());
+            simulator.handleEvent(*event, window, canvas.view, palette.getSelectedGateType());
         }
 
         canvas.update();
         palette.update();
+        simulator.update();
 
         window.clear(sf::Color::Black);
         canvas.draw(window);

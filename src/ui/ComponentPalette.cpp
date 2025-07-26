@@ -2,8 +2,10 @@
 
 ComponentPalette::ComponentPalette()
 {
+    // Initialize view for UI rendering
     uiView = sf::View({400.f, 300.f}, {800.f, 600.f});
-    gateTypes = {GateType::AND, GateType::OR, GateType::NOT};
+    gateTypes = {GateType::AND, GateType::OR, GateType::NOT, GateType::INPUT, GateType::OUTPUT};
+
     for (size_t i = 0; i < gateTypes.size(); ++i)
     {
         sf::RectangleShape button({50.f, 50.f});
@@ -39,7 +41,7 @@ void ComponentPalette::handleEvent(const sf::Event &event)
 
 void ComponentPalette::update()
 {
-    // No update logic needed for now
+    // No update logic needed
 }
 
 void ComponentPalette::draw(sf::RenderWindow &window)

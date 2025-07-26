@@ -256,4 +256,9 @@ CMakeFiles/digital-logic-sim.dir/src/engine/Simulator.cpp.o: \
  /usr/include/SFML/System/MemoryInputStream.hpp \
  /usr/include/SFML/System/Sleep.hpp \
  /home/nabaraj/Projects/dl/src/engine/Gate.h \
- /home/nabaraj/Projects/dl/src/engine/Wire.h
+ /home/nabaraj/Projects/dl/src/engine/Wire.h \
+ /usr/include/c++/15.1.1/queue /usr/include/c++/15.1.1/deque \
+ /usr/include/c++/15.1.1/bits/stl_deque.h \
+ /usr/include/c++/15.1.1/bits/deque.tcc \
+ /usr/include/c++/15.1.1/bits/stl_heap.h \
+ /usr/include/c++/15.1.1/bits/stl_queue.h
