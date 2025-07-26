@@ -255,6 +255,9 @@ CMakeFiles/digital-logic-sim.dir/src/ui/Canvas.cpp.o: \
  /usr/include/SFML/System/MemoryInputStream.hpp \
  /usr/include/SFML/System/Sleep.hpp \
  /home/nabaraj/Projects/dl/src/ui/../engine/Simulator.h \
+ /usr/include/c++/15.1.1/map /usr/include/c++/15.1.1/bits/stl_tree.h \
+ /usr/include/c++/15.1.1/bits/stl_map.h \
+ /usr/include/c++/15.1.1/bits/stl_multimap.h \
  /home/nabaraj/Projects/dl/src/ui/../engine/Gate.h \
  /home/nabaraj/Projects/dl/src/ui/../engine/Wire.h \
  /usr/include/c++/15.1.1/cmath /usr/include/math.h \

@@ -1,7 +1,6 @@
-CMakeFiles/digital-logic-sim.dir/src/engine/Simulator.cpp.o: \
- /home/nabaraj/Projects/dl/src/engine/Simulator.cpp \
- /usr/include/stdc-predef.h \
- /home/nabaraj/Projects/dl/src/engine/Simulator.h \
+CMakeFiles/digital-logic-sim.dir/src/engine/Gate_new.cpp.o: \
+ /home/nabaraj/Projects/dl/src/engine/Gate_new.cpp \
+ /usr/include/stdc-predef.h /home/nabaraj/Projects/dl/src/engine/Gate.h \
  /usr/include/SFML/Graphics.hpp /usr/include/SFML/Graphics/BlendMode.hpp \
  /usr/include/SFML/Graphics/Export.hpp /usr/include/SFML/Config.hpp \
  /usr/include/SFML/Graphics/CircleShape.hpp \
@@ -254,19 +253,4 @@ CMakeFiles/digital-logic-sim.dir/src/engine/Simulator.cpp.o: \
  /usr/include/SFML/System/FileInputStream.hpp \
  /usr/include/SFML/System/InputStream.hpp \
  /usr/include/SFML/System/MemoryInputStream.hpp \
- /usr/include/SFML/System/Sleep.hpp /usr/include/c++/15.1.1/map \
- /usr/include/c++/15.1.1/bits/stl_tree.h \
- /usr/include/c++/15.1.1/bits/stl_map.h \
- /usr/include/c++/15.1.1/bits/stl_multimap.h \
- /home/nabaraj/Projects/dl/src/engine/Gate.h \
- /home/nabaraj/Projects/dl/src/engine/Wire.h \
- /usr/include/c++/15.1.1/queue /usr/include/c++/15.1.1/deque \
- /usr/include/c++/15.1.1/bits/stl_deque.h \
- /usr/include/c++/15.1.1/bits/deque.tcc \
- /usr/include/c++/15.1.1/bits/stl_heap.h \
- /usr/include/c++/15.1.1/bits/stl_queue.h \
- /usr/include/c++/15.1.1/iostream /usr/include/c++/15.1.1/algorithm \
- /usr/include/c++/15.1.1/bits/stl_algo.h \
- /usr/include/c++/15.1.1/bits/algorithmfwd.h \
- /usr/include/c++/15.1.1/bits/uniform_int_dist.h \
- /usr/include/c++/15.1.1/pstl/glue_algorithm_defs.h
+ /usr/include/SFML/System/Sleep.hpp

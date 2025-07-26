@@ -1,13 +1,13 @@
 #include "Canvas.h"
 #include <cmath>
 
-Canvas::Canvas()
+Canvas::Canvas(Simulator &simulator) : simulator(simulator)
 {
-    view.setCenter({400.f, 300.f});
-    view.setSize({800.f, 600.f});
+    view.setCenter({600.f, 400.f});
+    view.setSize({1200.f, 800.f});
 }
 
-void Canvas::handleEvent(const sf::Event &event)
+void Canvas::handleEvent(const sf::Event &event, const sf::RenderWindow &window)
 {
     // Zoom with mouse wheel
     if (const auto *wheel = event.getIf<sf::Event::MouseWheelScrolled>())
@@ -42,6 +42,11 @@ void Canvas::handleEvent(const sf::Event &event)
         {
             sf::Vector2f newPos{(float)moved->position.x, (float)moved->position.y};
             sf::Vector2f delta = lastMousePos - newPos;
+
+            // Scale delta by the zoom level
+            float zoomFactor = view.getSize().x / window.getSize().x;
+            delta *= zoomFactor;
+
             view.move(delta);
             lastMousePos = newPos;
         }

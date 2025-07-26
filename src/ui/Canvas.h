@@ -5,18 +5,19 @@
 class Canvas
 {
 public:
-    Canvas();
+    Canvas(Simulator &simulator);
 
-    void handleEvent(const sf::Event &event);
+    void handleEvent(const sf::Event &event, const sf::RenderWindow &window);
     void update();
     void draw(sf::RenderWindow &window);
 
-    sf::View view; // Made public for simulator access
+    const sf::View &getView() const { return view; }
 
 private:
+    sf::View view;
     sf::Vector2f lastMousePos{};
     bool dragging = false;
-    Simulator simulator;
+    Simulator &simulator;
 
     void drawGrid(sf::RenderWindow &window);
 };

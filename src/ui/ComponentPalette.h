@@ -8,15 +8,19 @@ class ComponentPalette
 public:
     ComponentPalette();
 
-    void handleEvent(const sf::Event &event);
+    void handleEvent(const sf::Event &event, const sf::RenderWindow &window);
     void update();
     void draw(sf::RenderWindow &window);
 
     GateType getSelectedGateType() const;
 
 private:
-    std::vector<sf::RectangleShape> buttons;
+    sf::View uiView;
     std::vector<GateType> gateTypes;
-    int selectedIndex = -1;
-    sf::View uiView; // Fixed UI view for palette
+    std::vector<sf::RectangleShape> buttons;
+    int selectedIndex = 0;
+
+    void setupButtons();
+    std::string getGateTypeName(GateType type) const;
+    void drawSimpleText(sf::RenderWindow &window, const std::string &text, sf::Vector2f position, sf::Color color);
 };

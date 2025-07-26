@@ -12,6 +12,7 @@ public:
     size_t getDstGate() const;
     int getDstPin() const;
     void setPositions(sf::Vector2f start, sf::Vector2f end);
+    void setState(bool active);
 
 private:
     sf::VertexArray line;

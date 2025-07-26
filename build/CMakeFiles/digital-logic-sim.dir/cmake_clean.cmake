@@ -12,6 +12,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/digital-logic-sim.dir/src/ui/Canvas.cpp.o.d"
   "CMakeFiles/digital-logic-sim.dir/src/ui/ComponentPalette.cpp.o"
   "CMakeFiles/digital-logic-sim.dir/src/ui/ComponentPalette.cpp.o.d"
+  "CMakeFiles/digital-logic-sim.dir/src/ui/Menu.cpp.o"
+  "CMakeFiles/digital-logic-sim.dir/src/ui/Menu.cpp.o.d"
   "digital-logic-sim"
   "digital-logic-sim.pdb"
 )

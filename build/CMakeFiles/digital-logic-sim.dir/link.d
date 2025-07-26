@@ -8,6 +8,7 @@ digital-logic-sim: \
   CMakeFiles/digital-logic-sim.dir/src/main.cpp.o \
   CMakeFiles/digital-logic-sim.dir/src/ui/Canvas.cpp.o \
   CMakeFiles/digital-logic-sim.dir/src/ui/ComponentPalette.cpp.o \
+  CMakeFiles/digital-logic-sim.dir/src/ui/Menu.cpp.o \
   /usr/lib/libsfml-graphics.so.3.0.1 \
   /usr/lib/libsfml-window.so.3.0.1 \
   /usr/lib/libsfml-system.so.3.0.1 \
@@ -78,6 +79,8 @@ CMakeFiles/digital-logic-sim.dir/src/main.cpp.o:
 CMakeFiles/digital-logic-sim.dir/src/ui/Canvas.cpp.o:
 
 CMakeFiles/digital-logic-sim.dir/src/ui/ComponentPalette.cpp.o:
+
+CMakeFiles/digital-logic-sim.dir/src/ui/Menu.cpp.o:
 
 /usr/lib/libsfml-graphics.so.3.0.1:
 

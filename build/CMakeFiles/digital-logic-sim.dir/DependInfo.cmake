@@ -14,6 +14,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/nabaraj/Projects/dl/src/main.cpp" "CMakeFiles/digital-logic-sim.dir/src/main.cpp.o" "gcc" "CMakeFiles/digital-logic-sim.dir/src/main.cpp.o.d"
   "/home/nabaraj/Projects/dl/src/ui/Canvas.cpp" "CMakeFiles/digital-logic-sim.dir/src/ui/Canvas.cpp.o" "gcc" "CMakeFiles/digital-logic-sim.dir/src/ui/Canvas.cpp.o.d"
   "/home/nabaraj/Projects/dl/src/ui/ComponentPalette.cpp" "CMakeFiles/digital-logic-sim.dir/src/ui/ComponentPalette.cpp.o" "gcc" "CMakeFiles/digital-logic-sim.dir/src/ui/ComponentPalette.cpp.o.d"
+  "/home/nabaraj/Projects/dl/src/ui/Menu.cpp" "CMakeFiles/digital-logic-sim.dir/src/ui/Menu.cpp.o" "gcc" "CMakeFiles/digital-logic-sim.dir/src/ui/Menu.cpp.o.d"
   "" "digital-logic-sim" "gcc" "CMakeFiles/digital-logic-sim.dir/link.d"
   )
 

@@ -273,6 +273,30 @@ src/ui/ComponentPalette.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/digital-logic-sim.dir/build.make CMakeFiles/digital-logic-sim.dir/src/ui/ComponentPalette.cpp.s
 .PHONY : src/ui/ComponentPalette.cpp.s
 
+src/ui/Menu.o: src/ui/Menu.cpp.o
+.PHONY : src/ui/Menu.o
+
+# target to build an object file
+src/ui/Menu.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/digital-logic-sim.dir/build.make CMakeFiles/digital-logic-sim.dir/src/ui/Menu.cpp.o
+.PHONY : src/ui/Menu.cpp.o
+
+src/ui/Menu.i: src/ui/Menu.cpp.i
+.PHONY : src/ui/Menu.i
+
+# target to preprocess a source file
+src/ui/Menu.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/digital-logic-sim.dir/build.make CMakeFiles/digital-logic-sim.dir/src/ui/Menu.cpp.i
+.PHONY : src/ui/Menu.cpp.i
+
+src/ui/Menu.s: src/ui/Menu.cpp.s
+.PHONY : src/ui/Menu.s
+
+# target to generate assembly for a file
+src/ui/Menu.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/digital-logic-sim.dir/build.make CMakeFiles/digital-logic-sim.dir/src/ui/Menu.cpp.s
+.PHONY : src/ui/Menu.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -300,6 +324,9 @@ help:
 	@echo "... src/ui/ComponentPalette.o"
 	@echo "... src/ui/ComponentPalette.i"
 	@echo "... src/ui/ComponentPalette.s"
+	@echo "... src/ui/Menu.o"
+	@echo "... src/ui/Menu.i"
+	@echo "... src/ui/Menu.s"
 .PHONY : help
 
 

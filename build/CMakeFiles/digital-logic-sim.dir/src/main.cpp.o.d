@@ -255,6 +255,10 @@ CMakeFiles/digital-logic-sim.dir/src/main.cpp.o: \
  /usr/include/SFML/System/Sleep.hpp \
  /home/nabaraj/Projects/dl/src/ui/Canvas.h \
  /home/nabaraj/Projects/dl/src/ui/../engine/Simulator.h \
+ /usr/include/c++/15.1.1/map /usr/include/c++/15.1.1/bits/stl_tree.h \
+ /usr/include/c++/15.1.1/bits/stl_map.h \
+ /usr/include/c++/15.1.1/bits/stl_multimap.h \
  /home/nabaraj/Projects/dl/src/ui/../engine/Gate.h \
  /home/nabaraj/Projects/dl/src/ui/../engine/Wire.h \
- /home/nabaraj/Projects/dl/src/ui/ComponentPalette.h
+ /home/nabaraj/Projects/dl/src/ui/ComponentPalette.h \
+ /home/nabaraj/Projects/dl/src/ui/Menu.h
