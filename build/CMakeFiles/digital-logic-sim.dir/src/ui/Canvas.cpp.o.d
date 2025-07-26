@@ -1,7 +1,7 @@
 CMakeFiles/digital-logic-sim.dir/src/ui/Canvas.cpp.o: \
- /home/nabaraj/Projects/copy/src/ui/Canvas.cpp /usr/include/stdc-predef.h \
- /home/nabaraj/Projects/copy/src/ui/Canvas.h \
- /usr/include/SFML/Graphics.hpp /usr/include/SFML/Graphics/BlendMode.hpp \
+ /home/nabaraj/Projects/dl/src/ui/Canvas.cpp /usr/include/stdc-predef.h \
+ /home/nabaraj/Projects/dl/src/ui/Canvas.h /usr/include/SFML/Graphics.hpp \
+ /usr/include/SFML/Graphics/BlendMode.hpp \
  /usr/include/SFML/Graphics/Export.hpp /usr/include/SFML/Config.hpp \
  /usr/include/SFML/Graphics/CircleShape.hpp \
  /usr/include/SFML/Graphics/Shape.hpp \
@@ -254,12 +254,12 @@ CMakeFiles/digital-logic-sim.dir/src/ui/Canvas.cpp.o: \
  /usr/include/SFML/System/InputStream.hpp \
  /usr/include/SFML/System/MemoryInputStream.hpp \
  /usr/include/SFML/System/Sleep.hpp \
- /home/nabaraj/Projects/copy/src/ui/../engine/Simulator.h \
+ /home/nabaraj/Projects/dl/src/ui/../engine/Simulator.h \
  /usr/include/c++/15.1.1/map /usr/include/c++/15.1.1/bits/stl_tree.h \
  /usr/include/c++/15.1.1/bits/stl_map.h \
  /usr/include/c++/15.1.1/bits/stl_multimap.h \
- /home/nabaraj/Projects/copy/src/ui/../engine/Gate.h \
- /home/nabaraj/Projects/copy/src/ui/../engine/Wire.h \
+ /home/nabaraj/Projects/dl/src/ui/../engine/Gate.h \
+ /home/nabaraj/Projects/dl/src/ui/../engine/Wire.h \
  /usr/include/c++/15.1.1/cmath /usr/include/math.h \
  /usr/include/bits/math-vector.h /usr/include/bits/libm-simd-decl-stubs.h \
  /usr/include/bits/flt-eval-method.h /usr/include/bits/fp-logb.h \

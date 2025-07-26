@@ -42,31 +42,15 @@ int main()
 
     // Fonts
     sf::Font font;
-    LoadFont(font, "assets/fonts/arial.ttf");
+    LoadFont(font, "../assets/fonts/arial.ttf");
 
     // Set font for all UI components
     simulator.setFont(font);
     palette.setFont(font);
     menu.setFont(font);
 
-    sf::Text text(font);
-    text.setString("Test text");
-    text.setOrigin(text.getGlobalBounds().size / 2.f);
-    text.setPosition({width / 2.f, height / 2.f});
-    text.setFillColor(sf::Color::Green);
-    text.setOutlineThickness(2.f);
-    text.setOutlineColor(sf::Color::Blue);
-
-    sf::Clock clock;
-
     // Cursor management for SFML 3.0
     bool isHandCursor = false;
-
-    float dt = clock.restart().asSeconds();
-    std::stringstream sStream;
-    sStream << "Time: " << dt;
-
-    text.setString(sStream.str());
 
     while (window.isOpen())
     {
@@ -187,14 +171,12 @@ int main()
         simulator.update();
 
         window.clear(sf::Color(30, 30, 30));
-        // canvas.draw(window);
+        canvas.draw(window);
         palette.draw(window);
         simulator.drawUI(window);
 
         // Draw menu last (on top of everything)
         menu.draw(window);
-
-        window.draw(text);
 
         window.display();
     }

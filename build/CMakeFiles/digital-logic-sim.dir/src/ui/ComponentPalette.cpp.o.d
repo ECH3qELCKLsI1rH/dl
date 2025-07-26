@@ -1,7 +1,7 @@
 CMakeFiles/digital-logic-sim.dir/src/ui/ComponentPalette.cpp.o: \
- /home/nabaraj/Projects/copy/src/ui/ComponentPalette.cpp \
+ /home/nabaraj/Projects/dl/src/ui/ComponentPalette.cpp \
  /usr/include/stdc-predef.h \
- /home/nabaraj/Projects/copy/src/ui/ComponentPalette.h \
+ /home/nabaraj/Projects/dl/src/ui/ComponentPalette.h \
  /usr/include/SFML/Graphics.hpp /usr/include/SFML/Graphics/BlendMode.hpp \
  /usr/include/SFML/Graphics/Export.hpp /usr/include/SFML/Config.hpp \
  /usr/include/SFML/Graphics/CircleShape.hpp \
@@ -255,5 +255,5 @@ CMakeFiles/digital-logic-sim.dir/src/ui/ComponentPalette.cpp.o: \
  /usr/include/SFML/System/InputStream.hpp \
  /usr/include/SFML/System/MemoryInputStream.hpp \
  /usr/include/SFML/System/Sleep.hpp \
- /home/nabaraj/Projects/copy/src/ui/../engine/Gate.h \
+ /home/nabaraj/Projects/dl/src/ui/../engine/Gate.h \
  /usr/include/c++/15.1.1/iostream

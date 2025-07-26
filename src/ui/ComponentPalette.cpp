@@ -90,10 +90,12 @@ void ComponentPalette::setupTexts()
         "Controls:",
         "T-Truth Table",
         "E-Expression",
+        "F-File Menu",
         "C-Clear",
         "Del-Delete",
         "Esc-Cancel",
-        "F-File Menu"};
+        "Q-Quit",
+    };
 
     for (size_t i = 0; i < instructions.size(); ++i)
     {

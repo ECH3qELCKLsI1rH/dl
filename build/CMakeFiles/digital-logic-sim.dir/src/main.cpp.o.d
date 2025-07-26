@@ -1,5 +1,5 @@
 CMakeFiles/digital-logic-sim.dir/src/main.cpp.o: \
- /home/nabaraj/Projects/copy/src/main.cpp /usr/include/stdc-predef.h \
+ /home/nabaraj/Projects/dl/src/main.cpp /usr/include/stdc-predef.h \
  /usr/include/SFML/Graphics.hpp /usr/include/SFML/Graphics/BlendMode.hpp \
  /usr/include/SFML/Graphics/Export.hpp /usr/include/SFML/Config.hpp \
  /usr/include/SFML/Graphics/CircleShape.hpp \
@@ -253,13 +253,12 @@ CMakeFiles/digital-logic-sim.dir/src/main.cpp.o: \
  /usr/include/SFML/System/InputStream.hpp \
  /usr/include/SFML/System/MemoryInputStream.hpp \
  /usr/include/SFML/System/Sleep.hpp \
- /home/nabaraj/Projects/copy/src/ui/Canvas.h \
- /home/nabaraj/Projects/copy/src/ui/../engine/Simulator.h \
+ /home/nabaraj/Projects/dl/src/ui/Canvas.h \
+ /home/nabaraj/Projects/dl/src/ui/../engine/Simulator.h \
  /usr/include/c++/15.1.1/map /usr/include/c++/15.1.1/bits/stl_tree.h \
  /usr/include/c++/15.1.1/bits/stl_map.h \
  /usr/include/c++/15.1.1/bits/stl_multimap.h \
- /home/nabaraj/Projects/copy/src/ui/../engine/Gate.h \
- /home/nabaraj/Projects/copy/src/ui/../engine/Wire.h \
- /home/nabaraj/Projects/copy/src/ui/ComponentPalette.h \
- /home/nabaraj/Projects/copy/src/ui/Menu.h \
- /usr/include/c++/15.1.1/iostream
+ /home/nabaraj/Projects/dl/src/ui/../engine/Gate.h \
+ /home/nabaraj/Projects/dl/src/ui/../engine/Wire.h \
+ /home/nabaraj/Projects/dl/src/ui/ComponentPalette.h \
+ /home/nabaraj/Projects/dl/src/ui/Menu.h /usr/include/c++/15.1.1/iostream

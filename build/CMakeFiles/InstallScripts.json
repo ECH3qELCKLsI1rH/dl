@@ -1,7 +1,7 @@
 {
 	"InstallScripts" : 
 	[
-		"/home/nabaraj/Projects/copy/build/cmake_install.cmake"
+		"/home/nabaraj/Projects/dl/build/cmake_install.cmake"
 	],
 	"Parallel" : false
 }

@@ -1,6 +1,6 @@
 CMakeFiles/digital-logic-sim.dir/src/engine/Gate.cpp.o: \
- /home/nabaraj/Projects/copy/src/engine/Gate.cpp \
- /usr/include/stdc-predef.h /home/nabaraj/Projects/copy/src/engine/Gate.h \
+ /home/nabaraj/Projects/dl/src/engine/Gate.cpp /usr/include/stdc-predef.h \
+ /home/nabaraj/Projects/dl/src/engine/Gate.h \
  /usr/include/SFML/Graphics.hpp /usr/include/SFML/Graphics/BlendMode.hpp \
  /usr/include/SFML/Graphics/Export.hpp /usr/include/SFML/Config.hpp \
  /usr/include/SFML/Graphics/CircleShape.hpp \
