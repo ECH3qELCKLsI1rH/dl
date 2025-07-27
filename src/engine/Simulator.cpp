@@ -35,6 +35,17 @@ void Simulator::handleEvent(const sf::Event &event, const sf::RenderWindow &wind
                 }
             }
 
+            if (showInputField)
+            {
+                sf::FloatRect closeBtn({1110.f, 355.f}, {60.f, 20.f}); // Input field close button
+                if (closeBtn.contains(mousePos))
+                {
+                    showInputField = false;
+                    inputExpression.clear();
+                    return;
+                }
+            }
+
             // Skip if click is in the palette area
             if (mousePos.x <= 120.f)
                 return;
@@ -123,6 +134,39 @@ void Simulator::handleEvent(const sf::Event &event, const sf::RenderWindow &wind
             cancelSelection();
         }
     }
+    // Handle text input for expression field
+    if (showInputField)
+    {
+        if (const auto *textEntered = event.getIf<sf::Event::TextEntered>())
+        {
+            if (textEntered->unicode < 128) // ASCII only
+            {
+                char c = static_cast<char>(textEntered->unicode);
+                // Ignore 'i' or 'I' to prevent it from being added to input
+                if (std::tolower(c) == 'i')
+                    return;
+                if (c == '\b' && !inputExpression.empty()) // Backspace
+                {
+                    inputExpression.pop_back();
+                }
+                else if (c == '\r') // Enter key
+                {
+                    if (!inputExpression.empty())
+                    {
+                        expression = inputExpression;
+                        generateExpressionTruthTable();
+                        showInputField = false;
+                        inputExpression.clear();
+                    }
+                }
+                else if (std::isalpha(c) || c == '.' || c == '+' || c == '~' || c == '^' || c == '(' || c == ')')
+                {
+                    inputExpression += c;
+                }
+                setupUITexts();
+            }
+        }
+    }
 }
 
 void Simulator::addInput(sf::Vector2f position)
@@ -142,6 +186,12 @@ void Simulator::clearCircuit()
     truthTable.clear();
     showTruthTable = false;
     showExpression = false;
+    showInputField = false;
+    inputExpression.clear();
+    expression.clear();
+    variables.clear();
+    varValues.clear();
+    minterms.clear();
     inputCounter = 0;
     outputCounter = 0;
     std::cout << "Circuit cleared!" << std::endl;
@@ -167,6 +217,7 @@ void Simulator::selectGateAt(sf::Vector2f worldPos)
         }
     }
 }
+
 void Simulator::deleteSelectedGates()
 {
     if (selectedGates.empty())
@@ -218,11 +269,11 @@ void Simulator::removeGate(size_t gateIndex)
     {
         if (wire.getSrcGate() > gateIndex)
         {
-            // Need to update wire source gate index - this requires Wire modification
+            wire = Wire(wire.getSrcGate() - 1, wire.getSrcPin(), wire.getDstGate(), wire.getDstPin());
         }
         if (wire.getDstGate() > gateIndex)
         {
-            // Need to update wire destination gate index - this requires Wire modification
+            wire = Wire(wire.getSrcGate(), wire.getSrcPin(), wire.getDstGate() - 1, wire.getDstPin());
         }
     }
 }
@@ -353,9 +404,10 @@ void Simulator::drawUI(sf::RenderWindow &window) const
     sf::View uiView({600.f, 400.f}, {1200.f, 800.f});
     window.setView(uiView);
 
-    float rightSide = 800.f;
+    float rightSide = 820.f; // Right side of the UI
 
-    if (showExpression && !currentExpression.empty())
+    // Draw simplified expression
+    if (showExpression && currentFont && expressionTitleText && expressionText)
     {
         sf::RectangleShape expressionBg({380.f, 120.f});
         expressionBg.setPosition({rightSide, 50.f});
@@ -364,24 +416,13 @@ void Simulator::drawUI(sf::RenderWindow &window) const
         expressionBg.setOutlineColor(sf::Color::White);
         window.draw(expressionBg);
 
-        // Draw title and expression using proper text
-        if (currentFont != nullptr && expressionTitleText && expressionText)
-        {
-            // Update positions for text elements
-            expressionTitleText->setPosition({rightSide + 10.f, 60.f});
-            expressionText->setPosition({rightSide + 10.f, 80.f});
+        // Draw title
+        expressionTitleText->setPosition({rightSide + 10.f, 60.f});
+        window.draw(*expressionTitleText);
 
-            window.draw(*expressionTitleText);
-            window.draw(*expressionText);
-
-            // Instructions text
-            sf::Text instructText(*currentFont);
-            instructText.setString("Press E again or click CLOSE to hide");
-            instructText.setCharacterSize(10);
-            instructText.setFillColor(sf::Color(128, 128, 128));
-            instructText.setPosition({rightSide + 10.f, 140.f});
-            window.draw(instructText);
-        }
+        // Draw expression
+        expressionText->setPosition({rightSide + 10.f, 80.f});
+        window.draw(*expressionText);
 
         // Draw close button
         sf::RectangleShape closeBtn({60.f, 20.f});
@@ -391,18 +432,24 @@ void Simulator::drawUI(sf::RenderWindow &window) const
         closeBtn.setOutlineColor(sf::Color::White);
         window.draw(closeBtn);
 
-        if (currentFont != nullptr)
-        {
-            sf::Text closeText(*currentFont);
-            closeText.setString("CLOSE");
-            closeText.setCharacterSize(12);
-            closeText.setFillColor(sf::Color::White);
-            closeText.setPosition({rightSide + 320.f, 60.f});
-            window.draw(closeText);
-        }
+        sf::Text closeText(*currentFont);
+        closeText.setString("CLOSE");
+        closeText.setCharacterSize(12);
+        closeText.setFillColor(sf::Color::White);
+        closeText.setPosition({rightSide + 320.f, 60.f});
+        window.draw(closeText);
+
+        // Instructions
+        sf::Text instructText(*currentFont);
+        instructText.setString("Press E again or click CLOSE to hide");
+        instructText.setCharacterSize(10);
+        instructText.setFillColor(sf::Color(128, 128, 128));
+        instructText.setPosition({rightSide + 10.f, 140.f});
+        window.draw(instructText);
     }
 
-    if (showTruthTable && !truthTable.empty())
+    // Draw truth table
+    if (showTruthTable && !truthTable.empty() && currentFont && truthTableTitleText)
     {
         float tableHeight = std::min(400.f, (float)truthTable.size() * 20.f + 80.f);
         sf::RectangleShape tableBg({380.f, tableHeight});
@@ -412,12 +459,9 @@ void Simulator::drawUI(sf::RenderWindow &window) const
         tableBg.setOutlineColor(sf::Color::White);
         window.draw(tableBg);
 
-        // Draw title using proper text
-        if (currentFont != nullptr && truthTableTitleText)
-        {
-            truthTableTitleText->setPosition({rightSide + 10.f, 210.f});
-            window.draw(*truthTableTitleText);
-        }
+        // Draw title
+        truthTableTitleText->setPosition({rightSide + 10.f, 210.f});
+        window.draw(*truthTableTitleText);
 
         // Draw close button
         sf::RectangleShape closeBtn({60.f, 20.f});
@@ -427,45 +471,78 @@ void Simulator::drawUI(sf::RenderWindow &window) const
         closeBtn.setOutlineColor(sf::Color::White);
         window.draw(closeBtn);
 
-        if (currentFont != nullptr)
+        sf::Text closeText(*currentFont);
+        closeText.setString("CLOSE");
+        closeText.setCharacterSize(12);
+        closeText.setFillColor(sf::Color::White);
+        closeText.setPosition({rightSide + 320.f, 210.f});
+        window.draw(closeText);
+
+        // Draw table headers and data
+        float yPos = 230.f;
+        for (size_t i = 0; i < std::min((size_t)15, truthTableTexts.size()); ++i)
         {
-            sf::Text closeText(*currentFont);
-            closeText.setString("CLOSE");
-            closeText.setCharacterSize(12);
-            closeText.setFillColor(sf::Color::White);
-            closeText.setPosition({rightSide + 320.f, 210.f});
-            window.draw(closeText);
+            truthTableTexts[i].setPosition({rightSide + 10.f, yPos});
+            window.draw(truthTableTexts[i]);
+            yPos += 18.f;
         }
 
-        // Draw table headers and data using proper text
-        if (currentFont != nullptr)
+        if (truthTable.size() > 15)
         {
-            float yPos = 230.f;
-            for (size_t i = 0; i < std::min((size_t)15, truthTableTexts.size()); ++i)
-            {
-                truthTableTexts[i].setPosition({rightSide + 10.f, yPos});
-                window.draw(truthTableTexts[i]);
-                yPos += 18.f;
-            }
-
-            if (truthTable.size() > 15)
-            {
-                sf::Text moreText(*currentFont);
-                moreText.setString("... (showing first 15 rows)");
-                moreText.setCharacterSize(10);
-                moreText.setFillColor(sf::Color(128, 128, 128));
-                moreText.setPosition({rightSide + 10.f, yPos});
-                window.draw(moreText);
-            }
-
-            // Instructions
-            sf::Text instructText(*currentFont);
-            instructText.setString("Press T again or click CLOSE to hide");
-            instructText.setCharacterSize(10);
-            instructText.setFillColor(sf::Color(128, 128, 128));
-            instructText.setPosition({rightSide + 10.f, 200.f + tableHeight - 20.f});
-            window.draw(instructText);
+            sf::Text moreText(*currentFont);
+            moreText.setString("... (showing first 15 rows)");
+            moreText.setCharacterSize(10);
+            moreText.setFillColor(sf::Color(128, 128, 128));
+            moreText.setPosition({rightSide + 10.f, yPos});
+            window.draw(moreText);
         }
+
+        // Instructions
+        sf::Text instructText(*currentFont);
+        instructText.setString("Press T again or click CLOSE to hide");
+        instructText.setCharacterSize(10);
+        instructText.setFillColor(sf::Color(128, 128, 128));
+        instructText.setPosition({rightSide + 10.f, 200.f + tableHeight - 20.f});
+        window.draw(instructText);
+    }
+
+    // Draw input field
+    if (showInputField && currentFont && inputFieldText)
+    {
+        if (!inputFieldBg)
+        {
+            inputFieldBg = std::make_unique<sf::RectangleShape>(sf::Vector2f{380.f, 120.f});
+            inputFieldBg->setPosition({rightSide, 350.f});
+            inputFieldBg->setFillColor(sf::Color(0, 0, 0, 180));
+            inputFieldBg->setOutlineThickness(2.f);
+            inputFieldBg->setOutlineColor(sf::Color::White);
+        }
+        window.draw(*inputFieldBg);
+
+        inputFieldText->setPosition({rightSide + 10.f, 360.f});
+        window.draw(*inputFieldText);
+
+        sf::Text instructText(*currentFont);
+        instructText.setString("Enter expression (use . for AND, + for OR, ~ for NOT, ^ for XOR)\nPress Enter to submit, or click CLOSE to hide");
+        instructText.setCharacterSize(10);
+        instructText.setFillColor(sf::Color(128, 128, 128));
+        instructText.setPosition({rightSide + 10.f, 400.f});
+        window.draw(instructText);
+
+        // Draw close button
+        sf::RectangleShape closeBtn({60.f, 20.f});
+        closeBtn.setPosition({rightSide + 310.f, 355.f});
+        closeBtn.setFillColor(sf::Color::Red);
+        closeBtn.setOutlineThickness(1.f);
+        closeBtn.setOutlineColor(sf::Color::White);
+        window.draw(closeBtn);
+
+        sf::Text closeText(*currentFont);
+        closeText.setString("CLOSE");
+        closeText.setCharacterSize(12);
+        closeText.setFillColor(sf::Color::White);
+        closeText.setPosition({rightSide + 320.f, 360.f});
+        window.draw(closeText);
     }
 
     window.setView(originalView);
@@ -499,7 +576,6 @@ std::vector<size_t> Simulator::getOutputGates() const
 
 void Simulator::generateLogicalExpression()
 {
-    // Toggle if already showing
     if (showExpression)
     {
         showExpression = false;
@@ -518,14 +594,12 @@ void Simulator::generateLogicalExpression()
     std::map<size_t, std::string> expressions;
     auto inputs = getInputGates();
 
-    // Assign variable names to inputs
     for (size_t i = 0; i < inputs.size(); ++i)
     {
         char varName = 'A' + i;
         expressions[inputs[i]] = std::string(1, varName);
     }
 
-    // Generate expression for the first output
     currentExpression = generateExpressionForGate(outputs[0], expressions);
     showExpression = true;
     setupUITexts();
@@ -556,7 +630,6 @@ std::string Simulator::generateExpressionForGate(size_t gateIndex, std::map<size
 
     case GateType::NOT:
     {
-        // Find input
         for (const auto &wire : wires)
         {
             if (wire.getDstGate() == gateIndex && wire.getDstPin() == 0)
@@ -615,7 +688,6 @@ std::string Simulator::generateExpressionForGate(size_t gateIndex, std::map<size
 
     case GateType::OUTPUT:
     {
-        // Find input to output gate
         for (const auto &wire : wires)
         {
             if (wire.getDstGate() == gateIndex && wire.getDstPin() == 0)
@@ -636,7 +708,6 @@ std::string Simulator::generateExpressionForGate(size_t gateIndex, std::map<size
 
 void Simulator::generateTruthTable()
 {
-    // Toggle if already showing
     if (showTruthTable)
     {
         showTruthTable = false;
@@ -656,7 +727,6 @@ void Simulator::generateTruthTable()
 
     truthTable.clear();
 
-    // Header with unique input/output names
     std::string header;
     for (size_t i = 0; i < inputs.size(); ++i)
     {
@@ -669,27 +739,22 @@ void Simulator::generateTruthTable()
     }
     truthTable.push_back(header);
 
-    // Separator
     std::string separator(header.length(), '-');
     truthTable.push_back(separator);
 
-    // Generate all combinations
     int numInputs = inputs.size();
-    int combinations = 1 << numInputs; // 2^numInputs
+    int combinations = 1 << numInputs;
 
     for (int combo = 0; combo < combinations; ++combo)
     {
-        // Set input states
         for (int i = 0; i < numInputs; ++i)
         {
             bool value = (combo >> i) & 1;
             gates[inputs[i]].setState(value);
         }
 
-        // Evaluate circuit
         const_cast<Simulator *>(this)->evaluateCircuit();
 
-        // Build row
         std::string row;
         for (int i = 0; i < numInputs; ++i)
         {
@@ -711,6 +776,71 @@ void Simulator::generateTruthTable()
     std::cout << "Generated truth table with " << combinations << " rows" << std::endl;
 }
 
+void Simulator::generateExpressionTruthTable()
+{
+    if (expression.empty())
+    {
+        truthTable = {"No expression entered"};
+        showTruthTable = true;
+        std::cout << "No expression entered!" << std::endl;
+        return;
+    }
+
+    variables.clear();
+    for (char c : expression)
+    {
+        if (std::isalpha(c))
+        {
+            variables.push_back(c);
+        }
+    }
+    removeDuplicateVariables();
+
+    std::string postfix = infixToPostfix(expression);
+    int varCount = variables.size();
+    int rows = 1 << varCount;
+    minterms.clear();
+    truthTable.clear();
+
+    std::string header;
+    for (char var : variables)
+    {
+        header += std::string(1, var) + "  ";
+    }
+    header += "| " + expression;
+    truthTable.push_back(header);
+
+    std::string separator(header.length(), '-');
+    truthTable.push_back(separator);
+
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < varCount; j++)
+        {
+            varValues[variables[j]] = (i >> (varCount - 1 - j)) & 1;
+        }
+
+        bool result = evaluatePostfix(postfix);
+        minterms.push_back(result);
+
+        std::string row;
+        for (int j = 0; j < varCount; j++)
+        {
+            row += (varValues[variables[j]] ? " 1" : " 0") + std::string("  ");
+        }
+        row += "|  " + std::string(result ? "1" : "0");
+        truthTable.push_back(row);
+    }
+
+    showTruthTable = true;
+    currentExpression = simplifyExpression();
+    showExpression = true;
+    setupUITexts();
+
+    std::cout << "Generated truth table for expression: " << expression << std::endl;
+    std::cout << "Simplified expression: " << currentExpression << std::endl;
+}
+
 void Simulator::setFont(const sf::Font &font)
 {
     currentFont = &font;
@@ -720,24 +850,28 @@ void Simulator::setFont(const sf::Font &font)
 void Simulator::setupUITexts() const
 {
     if (currentFont == nullptr)
+    {
+        std::cout << "Error: currentFont is null in setupUITexts" << std::endl;
         return;
+    }
 
-    // Setup expression texts
     expressionTitleText = std::make_unique<sf::Text>(*currentFont);
-    expressionTitleText->setString("Logical Expression:");
+    expressionTitleText->setString("Simplified Expression:");
     expressionTitleText->setCharacterSize(16);
     expressionTitleText->setFillColor(sf::Color::White);
+    std::cout << "setupUITexts: Initialized expressionTitleText" << std::endl;
 
     expressionText = std::make_unique<sf::Text>(*currentFont);
-    expressionText->setString(currentExpression);
+    expressionText->setString(currentExpression.empty() ? "No expression" : currentExpression);
     expressionText->setCharacterSize(14);
     expressionText->setFillColor(sf::Color::Yellow);
+    std::cout << "setupUITexts: expressionText set to: " << (currentExpression.empty() ? "No expression" : currentExpression) << std::endl;
 
-    // Setup truth table texts
     truthTableTitleText = std::make_unique<sf::Text>(*currentFont);
     truthTableTitleText->setString("Truth Table:");
     truthTableTitleText->setCharacterSize(16);
     truthTableTitleText->setFillColor(sf::Color::White);
+    std::cout << "setupUITexts: Initialized truthTableTitleText" << std::endl;
 
     truthTableTexts.clear();
     for (const auto &row : truthTable)
@@ -748,4 +882,298 @@ void Simulator::setupUITexts() const
         rowText.setFillColor(sf::Color::White);
         truthTableTexts.push_back(rowText);
     }
+    std::cout << "setupUITexts: Initialized " << truthTableTexts.size() << " truth table rows" << std::endl;
+
+    inputFieldText = std::make_unique<sf::Text>(*currentFont);
+    inputFieldText->setString(inputExpression.empty() ? "Enter expression..." : inputExpression);
+    inputFieldText->setCharacterSize(14);
+    inputFieldText->setFillColor(sf::Color::White);
+    std::cout << "setupUITexts: Initialized inputFieldText" << std::endl;
+}
+
+void Simulator::toggleInputField()
+{
+    showInputField = !showInputField;
+    if (!showInputField)
+    {
+        inputExpression.clear();
+    }
+    setupUITexts();
+}
+
+void Simulator::removeDuplicateVariables()
+{
+    std::sort(variables.begin(), variables.end());
+    variables.erase(std::unique(variables.begin(), variables.end()), variables.end());
+}
+
+bool Simulator::isOperator(char c)
+{
+    return c == '.' || c == '+' || c == '~' || c == '^';
+}
+
+int Simulator::precedence(char op)
+{
+    if (op == '+')
+    {
+        return 1;
+    }
+    if (op == '.')
+    {
+        return 2;
+    }
+    if (op == '~' || op == '^')
+    {
+        return 3;
+    }
+    return 0;
+}
+
+bool Simulator::applyOperation(bool a, bool b, char op)
+{
+    switch (op)
+    {
+    case '.':
+        return a && b;
+    case '+':
+        return a || b;
+    case '^':
+        return a != b;
+    default:
+        return false;
+    }
+}
+
+std::string Simulator::infixToPostfix(const std::string &infix)
+{
+    std::stack<char> s;
+    std::string postfix;
+
+    for (char c : infix)
+    {
+        if (std::isalpha(c))
+        {
+            postfix += c;
+        }
+        else if (c == '(')
+        {
+            s.push(c);
+        }
+        else if (c == ')')
+        {
+            while (!s.empty() && s.top() != '(')
+            {
+                postfix += s.top();
+                s.pop();
+            }
+            s.pop();
+        }
+        else if (isOperator(c))
+        {
+            while (!s.empty() && precedence(s.top()) >= precedence(c))
+            {
+                postfix += s.top();
+                s.pop();
+            }
+            s.push(c);
+        }
+    }
+
+    while (!s.empty())
+    {
+        postfix += s.top();
+        s.pop();
+    }
+
+    return postfix;
+}
+
+bool Simulator::evaluatePostfix(const std::string &postfix)
+{
+    std::stack<bool> s;
+
+    for (char c : postfix)
+    {
+        if (std::isalpha(c))
+        {
+            s.push(varValues[c]);
+        }
+        else if (c == '~')
+        {
+            bool a = s.top();
+            s.pop();
+            s.push(!a);
+        }
+        else
+        {
+            bool b = s.top();
+            s.pop();
+            bool a = s.top();
+            s.pop();
+            s.push(applyOperation(a, b, c));
+        }
+    }
+
+    return s.top();
+}
+
+std::string Simulator::getBinaryString(int num, int length)
+{
+    std::string binary;
+    for (int i = length - 1; i >= 0; i--)
+    {
+        binary += ((num >> i) & 1) ? '1' : '0';
+    }
+    return binary;
+}
+
+bool Simulator::differsByOneBit(const std::string &a, const std::string &b)
+{
+    int diff = 0;
+    for (size_t i = 0; i < a.size(); i++)
+    {
+        if (a[i] != b[i])
+            diff++;
+        if (diff > 1)
+            return false;
+    }
+    return diff == 1;
+}
+
+std::string Simulator::combineTerms(const std::string &a, const std::string &b)
+{
+    std::string combined;
+    for (size_t i = 0; i < a.size(); i++)
+    {
+        combined += (a[i] == b[i]) ? a[i] : '-';
+    }
+    return combined;
+}
+
+std::string Simulator::termToExpression(const std::string &term)
+{
+    std::string expr;
+    for (size_t i = 0; i < term.size(); i++)
+    {
+        if (term[i] == '0')
+            expr += "~" + std::string(1, variables[i]) + " . ";
+        else if (term[i] == '1')
+            expr += std::string(1, variables[i]) + " . ";
+    }
+    if (!expr.empty())
+        expr = expr.substr(0, expr.size() - 3);
+    return expr.empty() ? "1" : expr;
+}
+
+std::string Simulator::simplifyExpression()
+{
+    if (variables.empty() || minterms.empty())
+        return "0";
+
+    bool all_true = true, all_false = true;
+    for (bool m : minterms)
+    {
+        if (!m)
+            all_true = false;
+        if (m)
+            all_false = false;
+    }
+    if (all_true)
+        return "1";
+    if (all_false)
+        return "0";
+
+    std::set<std::string> binaryMinterms;
+    for (size_t i = 0; i < minterms.size(); i++)
+    {
+        if (minterms[i])
+        {
+            binaryMinterms.insert(getBinaryString(i, variables.size()));
+        }
+    }
+
+    std::set<std::string> primeImplicants = binaryMinterms;
+    bool changed;
+    do
+    {
+        changed = false;
+        std::set<std::string> used;
+        std::set<std::string> newImplicants;
+
+        auto it1 = primeImplicants.begin();
+        while (it1 != primeImplicants.end())
+        {
+            bool combined = false;
+            auto it2 = primeImplicants.begin();
+            while (it2 != primeImplicants.end())
+            {
+                if (it1 == it2)
+                {
+                    ++it2;
+                    continue;
+                }
+                if (differsByOneBit(*it1, *it2))
+                {
+                    newImplicants.insert(combineTerms(*it1, *it2));
+                    used.insert(*it1);
+                    used.insert(*it2);
+                    combined = true;
+                    changed = true;
+                }
+                ++it2;
+            }
+            if (!combined && used.find(*it1) == used.end())
+            {
+                newImplicants.insert(*it1);
+            }
+            ++it1;
+        }
+
+        primeImplicants = newImplicants;
+    } while (changed);
+
+    std::string result;
+    for (const std::string &term : primeImplicants)
+    {
+        std::string expr = termToExpression(term);
+        if (!expr.empty())
+            result += "(" + expr + ") + ";
+    }
+
+    if (!result.empty())
+        result = result.substr(0, result.size() - 3);
+
+    if (primeImplicants.size() == 2)
+    {
+        auto it = primeImplicants.begin();
+        std::string term1 = *it;
+        std::string term2 = *(++it);
+
+        bool isXOR = true;
+        for (size_t i = 0; i < term1.size(); i++)
+        {
+            if ((term1[i] == '0' && term2[i] != '1') || (term1[i] == '1' && term2[i] != '0') ||
+                (term2[i] == '0' && term1[i] != '1') || (term2[i] == '1' && term1[i] != '0'))
+            {
+                isXOR = false;
+                break;
+            }
+        }
+        if (isXOR)
+        {
+            return std::string(1, variables[0]) + " ^ " + std::string(1, variables[1]);
+        }
+    }
+
+    return result.empty() ? "0" : result;
+}
+
+void Simulator::readExpression()
+{
+    // Implemented via UI input field, not console
+}
+
+void Simulator::generateCircuitFromExpression(const std::string &expr)
+{
+    // Placeholder for future implementation
 }

@@ -58,7 +58,8 @@ void Gate::draw(sf::RenderWindow &window) const
     if (type != GateType::INPUT)
     {
         pin.setFillColor(sf::Color::White);
-        for (int i = 0; i < (type == GateType::NOT ? 1 : 2); ++i)
+        int inputCount = (type == GateType::NOT || type == GateType::OUTPUT) ? 1 : 2;
+        for (int i = 0; i < inputCount; ++i)
         {
             pin.setPosition(getInputPinPosition(i) - sf::Vector2f{6.f, 6.f});
             window.draw(pin);
@@ -92,16 +93,16 @@ sf::FloatRect Gate::getBounds() const
 
 sf::Vector2f Gate::getInputPinPosition(int index) const
 {
-    if (type == GateType::NOT)
+    if (type == GateType::NOT || type == GateType::OUTPUT)
     {
-        return position + sf::Vector2f{0.f, 25.f};
+        return position + sf::Vector2f{0.f, 25.f}; // Single input pin at left center
     }
-    return position + sf::Vector2f{0.f, index == 0 ? 15.f : 35.f};
+    return position + sf::Vector2f{0.f, index == 0 ? 15.f : 35.f}; // Two input pins for AND/OR
 }
 
 sf::Vector2f Gate::getOutputPinPosition() const
 {
-    return position + sf::Vector2f{50.f, 25.f};
+    return position + sf::Vector2f{50.f, 25.f}; // Output pin at right center
 }
 
 void Gate::setState(bool state)
@@ -151,10 +152,11 @@ void Gate::drawGateLabel(sf::RenderWindow &window) const
     std::string label = getGateTypeString();
     sf::Vector2f center = position + sf::Vector2f{25.f, 25.f}; // Center of 50x50 gate
 
-    // Draw readable text using pixel patterns
-    float charWidth = 6.f;
-    float charHeight = 7.f;
-    float startX = center.x - (label.length() * charWidth) / 2.f;
+    // Calculate total width and height for centering
+    float charWidth = 6.f;                               // Width per character (5 pixels + 1 for spacing)
+    float charHeight = 7.f;                              // Height of character
+    float totalWidth = label.length() * charWidth - 1.f; // Subtract 1 to avoid extra spacing
+    float startX = center.x - totalWidth / 2.f;
     float startY = center.y - charHeight / 2.f;
 
     for (size_t i = 0; i < label.length(); ++i)
@@ -168,56 +170,8 @@ void Gate::drawCharacterPixels(sf::RenderWindow &window, char c, float x, float 
     // 5x7 pixel patterns for each character
     std::vector<std::vector<int>> pattern;
 
-    switch (c)
+    switch (std::toupper(c))
     {
-    case 'I':
-        pattern = {
-            {1, 1, 1},
-            {0, 1, 0},
-            {0, 1, 0},
-            {0, 1, 0},
-            {0, 1, 0},
-            {0, 1, 0},
-            {1, 1, 1}};
-        break;
-    case 'N':
-        pattern = {
-            {1, 0, 0, 1},
-            {1, 1, 0, 1},
-            {1, 0, 1, 1},
-            {1, 0, 0, 1},
-            {1, 0, 0, 1}};
-        break;
-    case 'O':
-        pattern = {
-            {0, 1, 1, 0},
-            {1, 0, 0, 1},
-            {1, 0, 0, 1},
-            {1, 0, 0, 1},
-            {1, 0, 0, 1},
-            {1, 0, 0, 1},
-            {0, 1, 1, 0}};
-        break;
-    case 'U':
-        pattern = {
-            {1, 0, 0, 1},
-            {1, 0, 0, 1},
-            {1, 0, 0, 1},
-            {1, 0, 0, 1},
-            {1, 0, 0, 1},
-            {1, 0, 0, 1},
-            {0, 1, 1, 0}};
-        break;
-    case 'T':
-        pattern = {
-            {1, 1, 1, 1, 1},
-            {0, 0, 1, 0, 0},
-            {0, 0, 1, 0, 0},
-            {0, 0, 1, 0, 0},
-            {0, 0, 1, 0, 0},
-            {0, 0, 1, 0, 0},
-            {0, 0, 1, 0, 0}};
-        break;
     case 'A':
         pattern = {
             {0, 1, 1, 0},
@@ -238,6 +192,36 @@ void Gate::drawCharacterPixels(sf::RenderWindow &window, char c, float x, float 
             {1, 0, 0, 1},
             {1, 1, 1, 0}};
         break;
+    case 'I':
+        pattern = {
+            {1, 1, 1},
+            {0, 1, 0},
+            {0, 1, 0},
+            {0, 1, 0},
+            {0, 1, 0},
+            {0, 1, 0},
+            {1, 1, 1}};
+        break;
+    case 'N':
+        pattern = {
+            {1, 0, 0, 1},
+            {1, 1, 0, 1},
+            {1, 0, 1, 1},
+            {1, 0, 0, 1},
+            {1, 0, 0, 1},
+            {1, 0, 0, 1},
+            {1, 0, 0, 1}};
+        break;
+    case 'O':
+        pattern = {
+            {0, 1, 1, 0},
+            {1, 0, 0, 1},
+            {1, 0, 0, 1},
+            {1, 0, 0, 1},
+            {1, 0, 0, 1},
+            {1, 0, 0, 1},
+            {0, 1, 1, 0}};
+        break;
     case 'R':
         pattern = {
             {1, 1, 1, 0},
@@ -247,6 +231,26 @@ void Gate::drawCharacterPixels(sf::RenderWindow &window, char c, float x, float 
             {1, 1, 0, 0},
             {1, 0, 1, 0},
             {1, 0, 0, 1}};
+        break;
+    case 'T':
+        pattern = {
+            {1, 1, 1, 1, 1},
+            {0, 0, 1, 0, 0},
+            {0, 0, 1, 0, 0},
+            {0, 0, 1, 0, 0},
+            {0, 0, 1, 0, 0},
+            {0, 0, 1, 0, 0},
+            {0, 0, 1, 0, 0}};
+        break;
+    case 'U':
+        pattern = {
+            {1, 0, 0, 1},
+            {1, 0, 0, 1},
+            {1, 0, 0, 1},
+            {1, 0, 0, 1},
+            {1, 0, 0, 1},
+            {1, 0, 0, 1},
+            {0, 1, 1, 0}};
         break;
     default:
         // Empty pattern for unknown characters
@@ -269,6 +273,7 @@ void Gate::drawCharacterPixels(sf::RenderWindow &window, char c, float x, float 
         }
     }
 }
+
 void Gate::setSelected(bool isSelected)
 {
     selected = isSelected;
@@ -277,4 +282,9 @@ void Gate::setSelected(bool isSelected)
 bool Gate::isSelected() const
 {
     return selected;
+}
+
+void Gate::drawCharacter(sf::RenderWindow &window, char c, float x, float y) const
+{
+    drawCharacterPixels(window, c, x, y);
 }
