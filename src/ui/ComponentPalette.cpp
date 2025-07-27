@@ -3,10 +3,8 @@
 
 ComponentPalette::ComponentPalette()
 {
-    // Initialize view for UI rendering (fixed UI view)
     uiView = sf::View({600.f, 400.f}, {1200.f, 800.f});
     gateTypes = {GateType::INPUT, GateType::AND, GateType::OR, GateType::NOT, GateType::OUTPUT};
-
     setupButtons();
 }
 
@@ -19,14 +17,14 @@ void ComponentPalette::setupButtons()
         sf::RectangleShape button({80.f, 40.f});
         button.setPosition({20.f, 50.f + i * 50.f});
 
-        // Set color based on state: selected (yellow), hovered (light gray), normal (white)
-        if (i == selectedIndex)
+        // Set button color: selected > hovered > default
+        if (static_cast<int>(i) == selectedIndex)
         {
             button.setFillColor(sf::Color::Yellow);
         }
-        else if (i == hoveredIndex)
+        else if (static_cast<int>(i) == hoveredIndex)
         {
-            button.setFillColor(sf::Color(220, 220, 220)); // Light gray for hover
+            button.setFillColor(sf::Color(220, 220, 220));
         }
         else
         {
@@ -38,7 +36,6 @@ void ComponentPalette::setupButtons()
         buttons.push_back(button);
     }
 
-    // Setup texts if font is available
     if (currentFont != nullptr)
     {
         setupTexts();
@@ -56,11 +53,9 @@ void ComponentPalette::setupTexts()
     if (currentFont == nullptr)
         return;
 
-    // Clear existing texts
     buttonLabels.clear();
     instructionTexts.clear();
 
-    // Setup button labels
     for (size_t i = 0; i < gateTypes.size(); ++i)
     {
         sf::Text label(*currentFont);
@@ -68,28 +63,26 @@ void ComponentPalette::setupTexts()
         label.setCharacterSize(14);
         label.setFillColor(sf::Color::Black);
 
-        // Center the label in the button
         sf::Vector2f buttonPos = buttons[i].getPosition();
         sf::Vector2f buttonSize = buttons[i].getSize();
         sf::FloatRect textBounds = label.getLocalBounds();
-        label.setPosition({buttonPos.x + (buttonSize.x - textBounds.size.x) / 2,
-                           buttonPos.y + (buttonSize.y - textBounds.size.y) / 2});
+        label.setPosition({buttonPos.x + (buttonSize.x - textBounds.size.x) / 2.f,
+                           buttonPos.y + (buttonSize.y - textBounds.size.y) / 2.f});
 
         buttonLabels.push_back(label);
     }
 
-    // Setup title text
     titleText = sf::Text(*currentFont);
     titleText->setString("Components");
     titleText->setCharacterSize(16);
     titleText->setFillColor(sf::Color::White);
     titleText->setPosition({15.f, 15.f});
 
-    // Setup instruction texts
     std::vector<std::string> instructions = {
         "Controls:",
         "T-Truth Table",
         "E-Expression",
+        "I-Input Expr",
         "F-File Menu",
         "C-Clear",
         "Del-Delete",
@@ -129,44 +122,50 @@ std::string ComponentPalette::getGateTypeName(GateType type) const
 
 void ComponentPalette::handleEvent(const sf::Event &event, const sf::RenderWindow &window)
 {
-    // Always update hover state based on mouse position
-    sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
-    sf::Vector2f mousePos{(float)mousePixel.x, (float)mousePixel.y};
-
-    // Update hover state
-    int newHoveredIndex = -1;
-    if (mousePos.x <= 120.f) // Only hover in palette area
+    // Handle mouse move events for hover
+    if (event.is<sf::Event::MouseMoved>())
     {
-        for (size_t i = 0; i < buttons.size(); ++i)
+        sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
+        sf::Vector2f mousePos = window.mapPixelToCoords(mousePixel, uiView);
+
+        int newHoveredIndex = -1;
+        if (mousePos.x >= 20.f && mousePos.x <= 100.f)
         {
-            if (buttons[i].getGlobalBounds().contains(mousePos))
+            for (size_t i = 0; i < buttons.size(); ++i)
             {
-                newHoveredIndex = static_cast<int>(i);
-                break;
+                if (buttons[i].getGlobalBounds().contains(mousePos))
+                {
+                    newHoveredIndex = static_cast<int>(i);
+                    break;
+                }
             }
+        }
+
+        if (newHoveredIndex != hoveredIndex)
+        {
+            hoveredIndex = newHoveredIndex;
+            setupButtons();
+            // std::cout << "Hovered index: " << hoveredIndex << std::endl;
         }
     }
 
-    // Update hover state and refresh buttons if it changed
-    if (newHoveredIndex != hoveredIndex)
-    {
-        hoveredIndex = newHoveredIndex;
-        setupButtons(); // Refresh button colors
-    }
-
+    // Handle mouse click events for selection
     if (const auto *clicked = event.getIf<sf::Event::MouseButtonPressed>())
     {
         if (clicked->button == sf::Mouse::Button::Left)
         {
-            // Check if click is in palette area
-            if (mousePos.x <= 120.f)
+            sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
+            sf::Vector2f mousePos = window.mapPixelToCoords(mousePixel, uiView);
+
+            if (mousePos.x >= 20.f && mousePos.x <= 100.f)
             {
                 for (size_t i = 0; i < buttons.size(); ++i)
                 {
                     if (buttons[i].getGlobalBounds().contains(mousePos))
                     {
-                        selectedIndex = i;
-                        setupButtons(); // Refresh button colors
+                        selectedIndex = static_cast<int>(i);
+                        setupButtons();
+                        // std::cout << "Selected index: " << selectedIndex << std::endl;
                         break;
                     }
                 }
@@ -177,20 +176,19 @@ void ComponentPalette::handleEvent(const sf::Event &event, const sf::RenderWindo
 
 void ComponentPalette::update()
 {
-    // No update logic needed
+    // Update button states every frame to reflect hover and selection
+    setupButtons();
 }
 
 void ComponentPalette::draw(sf::RenderWindow &window)
 {
     window.setView(uiView);
 
-    // Draw palette background
     sf::RectangleShape background({120.f, 800.f});
     background.setPosition({0.f, 0.f});
     background.setFillColor(sf::Color(200, 200, 200, 200));
     window.draw(background);
 
-    // Draw title background
     sf::RectangleShape titleBg({100.f, 30.f});
     titleBg.setPosition({10.f, 10.f});
     titleBg.setFillColor(sf::Color::Black);
@@ -198,25 +196,21 @@ void ComponentPalette::draw(sf::RenderWindow &window)
     titleBg.setOutlineColor(sf::Color::White);
     window.draw(titleBg);
 
-    // Draw title text
     if (currentFont != nullptr && titleText.has_value())
     {
         window.draw(titleText.value());
     }
 
-    // Draw buttons and labels
     for (size_t i = 0; i < buttons.size(); ++i)
     {
         window.draw(buttons[i]);
 
-        // Draw button label using proper text
         if (currentFont != nullptr && i < buttonLabels.size())
         {
             window.draw(buttonLabels[i]);
         }
     }
 
-    // Draw instructions using proper text
     if (currentFont != nullptr)
     {
         for (const auto &instrText : instructionTexts)
