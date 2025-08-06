@@ -2,10 +2,7 @@
   "configurations": [
     {
       "name": "Win32",
-      "includePath": [
-        "${workspaceFolder}/**",
-        "C:/C++Libraries/SFML-3.0.0/include"
-      ],
+      "includePath": ["${workspaceFolder}/**", "src/SFML-3.0.0/include"],
       "defines": ["_DEBUG", "UNICODE", "_UNICODE"],
       "compilerPath": "C:\\mingw64\\bin\\gcc.exe",
       "cStandard": "c17",
