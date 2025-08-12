@@ -2,9 +2,8 @@
 #include <SFML/Graphics.hpp>
 #include <optional>
 
-class Menu
-{
-public:
+class Menu {
+   public:
     Menu();
 
     void handleEvent(const sf::Event &event, sf::RenderWindow &window);
@@ -15,7 +14,7 @@ public:
     void setVisible(bool vis) { visible = vis; }
     bool shouldQuit() const { return quit; }
 
-private:
+   private:
     bool visible = false;
     bool quit = false;
     bool quitButtonHovered = false;

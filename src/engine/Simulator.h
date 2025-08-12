@@ -13,9 +13,8 @@
 #include "Gate.h"
 #include "Wire.h"
 
-class Simulator
-{
-public:
+class Simulator {
+   public:
     void handleEvent(const sf::Event &event, const sf::RenderWindow &window, const sf::View &view, GateType selectedGate);
     void update();
     void draw(sf::RenderWindow &window) const;
@@ -24,7 +23,7 @@ public:
     void readExpression();
     void generateTruthTable();
     void generateExpressionTruthTable();
-    std::string simplifyExpression(); // Changed from void to std::string
+    std::string simplifyExpression();  // Changed from void to std::string
     void generateLogicalExpression();
     void clearCircuit();
     void deleteSelectedGates();
@@ -34,7 +33,7 @@ public:
     void toggleInputField();
     bool isInputFieldActive() const { return showInputField; }
 
-private:
+   private:
     std::string expression;
     std::vector<char> variables;
     std::map<char, bool> varValues;
@@ -50,7 +49,7 @@ private:
     bool differsByOneBit(const std::string &a, const std::string &b);
     std::string combineTerms(const std::string &a, const std::string &b);
     std::string termToExpression(const std::string &term);
-    void generateCircuitFromExpression(const std::string &expr); // Changed from std::string to void
+    void generateCircuitFromExpression(const std::string &expr);  // Changed from std::string to void
 
     std::vector<Gate> gates;
     std::vector<Wire> wires;
