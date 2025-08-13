@@ -1,0 +1,9 @@
+{
+  "editor.wordWrap": "on",
+  "editor.formatOnSave": true,
+  "files.trimTrailingWhitespace": true,
+  "makefile.configureOnOpen": true,
+  
+  "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, BreakBeforeBraces: Attach, IndentWidth: 4, UseTab: Never, ColumnLimit: 150 }",
+  "C_Cpp.clang_format_style": "file"
+}

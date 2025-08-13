@@ -1,12 +1,8 @@
 #include "Menu.h"
 
-Menu::Menu()
-{
-    setupMenu();
-}
+Menu::Menu() { setupMenu(); }
 
-void Menu::setupMenu()
-{
+void Menu::setupMenu() {
     // Menu background
     menuBackground.setSize({300.f, 200.f});
     menuBackground.setPosition({450.f, 300.f});
@@ -29,22 +25,18 @@ void Menu::setupMenu()
     cancelButton.setOutlineColor(sf::Color::White);
 
     // Setup texts if font is available
-    if (currentFont != nullptr)
-    {
+    if (currentFont != nullptr) {
         setupTexts();
     }
 }
 
-void Menu::setFont(const sf::Font &font)
-{
+void Menu::setFont(const sf::Font &font) {
     currentFont = &font;
     setupTexts();
 }
 
-void Menu::setupTexts()
-{
-    if (currentFont == nullptr)
-        return;
+void Menu::setupTexts() {
+    if (currentFont == nullptr) return;
 
     // Title text
     titleText = sf::Text(*currentFont);
@@ -68,8 +60,8 @@ void Menu::setupTexts()
     sf::FloatRect quitBounds = quitButtonText->getLocalBounds();
     sf::Vector2f quitButtonPos = quitButton.getPosition();
     sf::Vector2f quitButtonSize = quitButton.getSize();
-    quitButtonText->setPosition({quitButtonPos.x + (quitButtonSize.x - quitBounds.size.x) / 2,
-                                 quitButtonPos.y + (quitButtonSize.y - quitBounds.size.y) / 2});
+    quitButtonText->setPosition(
+        {quitButtonPos.x + (quitButtonSize.x - quitBounds.size.x) / 2, quitButtonPos.y + (quitButtonSize.y - quitBounds.size.y) / 2});
 
     // Cancel button text
     cancelButtonText = sf::Text(*currentFont);
@@ -79,14 +71,12 @@ void Menu::setupTexts()
     sf::FloatRect cancelBounds = cancelButtonText->getLocalBounds();
     sf::Vector2f cancelButtonPos = cancelButton.getPosition();
     sf::Vector2f cancelButtonSize = cancelButton.getSize();
-    cancelButtonText->setPosition({cancelButtonPos.x + (cancelButtonSize.x - cancelBounds.size.x) / 2,
-                                   cancelButtonPos.y + (cancelButtonSize.y - cancelBounds.size.y) / 2});
+    cancelButtonText->setPosition(
+        {cancelButtonPos.x + (cancelButtonSize.x - cancelBounds.size.x) / 2, cancelButtonPos.y + (cancelButtonSize.y - cancelBounds.size.y) / 2});
 }
 
-void Menu::handleEvent(const sf::Event &event, sf::RenderWindow &window)
-{
-    if (!visible)
-        return;
+void Menu::handleEvent(const sf::Event &event, sf::RenderWindow &window) {
+    if (!visible) return;
 
     // Get mouse position for hover detection
     sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
@@ -98,44 +88,31 @@ void Menu::handleEvent(const sf::Event &event, sf::RenderWindow &window)
     cancelButtonHovered = cancelButton.getGlobalBounds().contains(mousePos);
 
     // Update button colors based on hover state
-    if (quitButtonHovered)
-    {
-        quitButton.setFillColor(sf::Color(200, 50, 50)); // Lighter red on hover
-    }
-    else
-    {
-        quitButton.setFillColor(sf::Color::Red); // Normal red
+    if (quitButtonHovered) {
+        quitButton.setFillColor(sf::Color(200, 50, 50));  // Lighter red on hover
+    } else {
+        quitButton.setFillColor(sf::Color::Red);  // Normal red
     }
 
-    if (cancelButtonHovered)
-    {
-        cancelButton.setFillColor(sf::Color(50, 200, 50)); // Lighter green on hover
-    }
-    else
-    {
-        cancelButton.setFillColor(sf::Color::Green); // Normal green
+    if (cancelButtonHovered) {
+        cancelButton.setFillColor(sf::Color(50, 200, 50));  // Lighter green on hover
+    } else {
+        cancelButton.setFillColor(sf::Color::Green);  // Normal green
     }
 
-    if (const auto *clicked = event.getIf<sf::Event::MouseButtonPressed>())
-    {
-        if (clicked->button == sf::Mouse::Button::Left)
-        {
-            if (quitButton.getGlobalBounds().contains(mousePos))
-            {
+    if (const auto *clicked = event.getIf<sf::Event::MouseButtonPressed>()) {
+        if (clicked->button == sf::Mouse::Button::Left) {
+            if (quitButton.getGlobalBounds().contains(mousePos)) {
                 quit = true;
-            }
-            else if (cancelButton.getGlobalBounds().contains(mousePos))
-            {
+            } else if (cancelButton.getGlobalBounds().contains(mousePos)) {
                 visible = false;
             }
         }
     }
 }
 
-void Menu::draw(sf::RenderWindow &window)
-{
-    if (!visible)
-        return;
+void Menu::draw(sf::RenderWindow &window) {
+    if (!visible) return;
 
     // Save current view
     sf::View currentView = window.getView();
@@ -148,16 +125,11 @@ void Menu::draw(sf::RenderWindow &window)
     window.draw(cancelButton);
 
     // Draw text labels using proper text
-    if (currentFont != nullptr)
-    {
-        if (titleText.has_value())
-            window.draw(titleText.value());
-        if (questionText.has_value())
-            window.draw(questionText.value());
-        if (quitButtonText.has_value())
-            window.draw(quitButtonText.value());
-        if (cancelButtonText.has_value())
-            window.draw(cancelButtonText.value());
+    if (currentFont != nullptr) {
+        if (titleText.has_value()) window.draw(titleText.value());
+        if (questionText.has_value()) window.draw(questionText.value());
+        if (quitButtonText.has_value()) window.draw(quitButtonText.value());
+        if (cancelButtonText.has_value()) window.draw(cancelButtonText.value());
     }
 
     // Restore view
