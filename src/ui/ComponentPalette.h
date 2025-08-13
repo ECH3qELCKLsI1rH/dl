@@ -1,12 +1,12 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <vector>
 #include <optional>
+#include <vector>
+
 #include "../engine/Gate.h"
 
-class ComponentPalette
-{
-public:
+class ComponentPalette {
+   public:
     ComponentPalette();
     void setFont(const sf::Font &font);
     void handleEvent(const sf::Event &event, const sf::RenderWindow &window);
@@ -14,7 +14,7 @@ public:
     void draw(sf::RenderWindow &window);
     GateType getSelectedGateType() const;
 
-private:
+   private:
     void setupButtons();
     void setupTexts();
     std::string getGateTypeName(GateType type) const;
