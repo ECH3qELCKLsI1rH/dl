@@ -5,7 +5,6 @@
 #include "ui/Menu.h"
 #include "engine/Simulator.h"
 
-#include <iostream>
 #include <string>
 
 void LoadFont(sf::Font &font, std::string str)
@@ -24,7 +23,7 @@ int main()
 
     sf::RenderWindow window(
         sf::VideoMode({width, height}),
-        "Digital Logic Simulator - Logic Expression & Truth Table Generator",
+        "Digital Logic Suite",
         sf::Style::Default);
 
     window.setPosition({static_cast<int>((desktop.size.x - width) / 2),

@@ -1,18 +1,27 @@
-TARGET = program.exe
-SRC = src/main.cpp src/ui/*.cpp src/engine/*.cpp
-INCLUDE = -I"src/SFML-3.0.0/include"
-LIBRARY = -L"src/SFML-3.0.0/lib"
-LIBS = -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lopengl32 -lfreetype -lwinmm -lgdi32
+# Detect OS (Windows,Linux)
+ifeq ($(OS),Windows_NT)
+    TARGET = program.exe
+    SRC = src/main.cpp src/ui/*.cpp src/engine/*.cpp
+    INCLUDE = -I"src/SFML-3.0.0/include"
+    LIBRARY = -L"src/SFML-3.0.0/lib"
+    LIBS = -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lopengl32 -lfreetype -lwinmm -lgdi32
+    CFLAGS = -std=c++17 $(INCLUDE) -DSFML_STATIC
+    LFLAGS = $(LIBRARY) $(LIBS)
+    RM = del /Q
+else
+    TARGET = program
+    SRC = src/main.cpp src/ui/*.cpp src/engine/*.cpp
+    CFLAGS = -std=c++17
+    LFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
+    RM = rm -f
+endif
 
 all:
-	g++ -std=c++17 $(SRC) -o $(TARGET) $(INCLUDE) -DSFML_STATIC $(LIBRARY) $(LIBS)
+	g++ $(CFLAGS) $(SRC) -o $(TARGET) $(LFLAGS)
 
 run: all
-	$(TARGET)
+	./$(TARGET)
 
 clean:
-	del /Q $(TARGET)
+	$(RM) $(TARGET)
 
-# "make" 		: compile matra
-# "make run" 	: compile and run
-# "make clean" 	: remove generated .exe file
