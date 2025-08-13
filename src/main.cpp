@@ -7,9 +7,12 @@
 #include "ui/Canvas.h"
 #include "ui/ComponentPalette.h"
 #include "ui/Menu.h"
+#include <string>
 
-void LoadFont(sf::Font &font, std::string str) {
-    if (!font.openFromFile(str)) {
+void LoadFont(sf::Font &font, std::string str)
+{
+    if (!font.openFromFile(str))
+    {
         std::cerr << "Error: Could not load font file " << str << "!!!" << std::endl;
     }
 }
@@ -19,7 +22,10 @@ int main() {
     unsigned int width = static_cast<unsigned int>(desktop.size.x * 0.8f);
     unsigned int height = static_cast<unsigned int>(desktop.size.y * 0.8f);
 
-    sf::RenderWindow window(sf::VideoMode({width, height}), "Digital Logic Simulator - Logic Expression & Truth Table Generator", sf::Style::Default);
+    sf::RenderWindow window(
+        sf::VideoMode({width, height}),
+        "Digital Logic Suite",
+        sf::Style::Default);
 
     window.setPosition({static_cast<int>((desktop.size.x - width) / 2), static_cast<int>((desktop.size.y - height) / 2)});
 
