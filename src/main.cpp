@@ -28,7 +28,7 @@ int main() {
     Menu menu;
 
     sf::Font font;
-    LoadFont(font, "assets/fonts/arial.ttf");
+    LoadFont(font, "src/assets/fonts/arial.ttf");
 
     simulator.setFont(font);
     palette.setFont(font);

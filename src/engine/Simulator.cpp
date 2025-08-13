@@ -1,8 +1,7 @@
 #include "Simulator.h"
+
 #include <algorithm>
 #include <iostream>
-#include <queue>
-#include <sstream>
 
 void Simulator::handleEvent(const sf::Event &event, const sf::RenderWindow &window, const sf::View &view, GateType selectedGateType) {
     if (const auto *clicked = event.getIf<sf::Event::MouseButtonPressed>()) {
@@ -11,7 +10,8 @@ void Simulator::handleEvent(const sf::Event &event, const sf::RenderWindow &wind
             sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
             sf::Vector2f mousePos{(float)mousePixel.x, (float)mousePixel.y};
 
-            // Check for close button clicks in UI elements (these use screen coordinates)
+            // Check for close button clicks in UI elements (these use screen
+            // coordinates)
             if (showExpression) {
                 sf::FloatRect closeBtn({1110.f, 55.f}, {60.f, 20.f});  // Expression close button
                 if (closeBtn.contains(mousePos)) {
@@ -39,7 +39,8 @@ void Simulator::handleEvent(const sf::Event &event, const sf::RenderWindow &wind
 
             // Skip if click is in the palette area
             if (mousePos.x <= 120.f) return;
-      sf::Vector2f worldPos = window.mapPixelToCoords(mousePixel, view);
+
+            sf::Vector2f worldPos = window.mapPixelToCoords(mousePixel, view);
 
             // Check for gate/pin selection
             bool hitGate = false;
@@ -86,10 +87,6 @@ void Simulator::handleEvent(const sf::Event &event, const sf::RenderWindow &wind
                     break;
                 }
             }
-            hitGate = true;
-            break;
-          }
-        }
 
             // Place new gate if no gate/pin was hit and not in wire placement mode
             if (!hitGate && selectedGate == std::numeric_limits<size_t>::max()) {
@@ -108,16 +105,6 @@ void Simulator::handleEvent(const sf::Event &event, const sf::RenderWindow &wind
             // Cancel wire placement or deselect all gates
             cancelSelection();
         }
-        else
-        {
-          gates.emplace_back(selectedGateType, worldPos);
-        }
-      }
-    }
-    else if (clicked->button == sf::Mouse::Button::Right)
-    {
-      // Cancel wire placement or deselect all gates
-      cancelSelection();
     }
     // Handle text input for expression field
     if (showInputField) {
@@ -144,25 +131,7 @@ void Simulator::handleEvent(const sf::Event &event, const sf::RenderWindow &wind
                 setupUITexts();
             }
         }
-        else if (c == '\r') // Enter key
-        {
-          if (!inputExpression.empty())
-          {
-            expression = inputExpression;
-            generateExpressionTruthTable();
-            showInputField = false;
-            inputExpression.clear();
-          }
-        }
-        else if (std::isalpha(c) || c == '.' || c == '+' || c == '~' ||
-                 c == '^' || c == '(' || c == ')')
-        {
-          inputExpression += c;
-        }
-        setupUITexts();
-      }
     }
-  }
 }
 
 void Simulator::addInput(sf::Vector2f position) { gates.emplace_back(GateType::INPUT, position); }
@@ -204,24 +173,22 @@ void Simulator::selectGateAt(sf::Vector2f worldPos) {
             break;
         }
     }
-  }
 }
 
 void Simulator::deleteSelectedGates() {
     if (selectedGates.empty()) return;
 
-  // Sort indices in descending order to avoid index shifting issues
-  std::sort(selectedGates.begin(), selectedGates.end(), std::greater<size_t>());
+    // Sort indices in descending order to avoid index shifting issues
+    std::sort(selectedGates.begin(), selectedGates.end(), std::greater<size_t>());
 
     for (size_t gateIndex : selectedGates) {
         if (gateIndex < gates.size()) {
             removeGate(gateIndex);
         }
     }
-  }
 
-  selectedGates.clear();
-  std::cout << "Deleted selected gates" << std::endl;
+    selectedGates.clear();
+    std::cout << "Deleted selected gates" << std::endl;
 }
 
 void Simulator::cancelSelection() {
@@ -240,11 +207,11 @@ void Simulator::cancelSelection() {
 void Simulator::removeGate(size_t gateIndex) {
     if (gateIndex >= gates.size()) return;
 
-  // Remove all wires connected to this gate
-  removeWiresConnectedToGate(gateIndex);
+    // Remove all wires connected to this gate
+    removeWiresConnectedToGate(gateIndex);
 
-  // Remove the gate
-  gates.erase(gates.begin() + gateIndex);
+    // Remove the gate
+    gates.erase(gates.begin() + gateIndex);
 
     // Update wire indices (shift down by 1 for gates with index > gateIndex)
     for (auto &wire : wires) {
@@ -255,12 +222,6 @@ void Simulator::removeGate(size_t gateIndex) {
             wire = Wire(wire.getSrcGate(), wire.getSrcPin(), wire.getDstGate() - 1, wire.getDstPin());
         }
     }
-    if (wire.getDstGate() > gateIndex)
-    {
-      wire = Wire(wire.getSrcGate(), wire.getSrcPin(), wire.getDstGate() - 1,
-                  wire.getDstPin());
-    }
-  }
 }
 
 void Simulator::removeWiresConnectedToGate(size_t gateIndex) {
@@ -278,8 +239,7 @@ void Simulator::update() {
             wire.setPositions(start, end);
         }
     }
-  }
-  evaluateCircuit();
+    evaluateCircuit();
 }
 
 void Simulator::evaluateCircuit() {
@@ -289,11 +249,10 @@ void Simulator::evaluateCircuit() {
             gate.setState(false);
         }
     }
-  }
 
-  // Topological evaluation
-  std::vector<bool> evaluated(gates.size(), false);
-  bool progress = true;
+    // Topological evaluation
+    std::vector<bool> evaluated(gates.size(), false);
+    bool progress = true;
 
     while (progress) {
         progress = false;
@@ -302,10 +261,11 @@ void Simulator::evaluateCircuit() {
                 if (gates[i].getType() == GateType::INPUT) evaluated[i] = true;
                 continue;
             }
-      // Check if all inputs are available
-      std::vector<bool> inputs;
-      int inputCount = (gates[i].getType() == GateType::NOT) ? 1 : 2;
-      bool allInputsReady = true;
+
+            // Check if all inputs are available
+            std::vector<bool> inputs;
+            int inputCount = (gates[i].getType() == GateType::NOT) ? 1 : 2;
+            bool allInputsReady = true;
 
             for (int j = 0; j < inputCount; ++j) {
                 bool inputValue = false;
@@ -333,22 +293,8 @@ void Simulator::evaluateCircuit() {
                 evaluated[i] = true;
                 progress = true;
             }
-          }
         }
-
-        if (!allInputsReady)
-          break;
-        inputs.push_back(inputValue);
-      }
-
-      if (allInputsReady && inputs.size() == inputCount)
-      {
-        gates[i].setState(gates[i].evaluate(inputs));
-        evaluated[i] = true;
-        progress = true;
-      }
     }
-  }
 }
 
 void Simulator::draw(sf::RenderWindow &window) const {
@@ -489,7 +435,9 @@ void Simulator::drawUI(sf::RenderWindow &window) const {
         window.draw(*inputFieldText);
 
         sf::Text instructText(*currentFont);
-        instructText.setString("Enter expression (use . for AND, + for OR, ~ for NOT, ^ for XOR)\nPress Enter to submit, or click CLOSE to hide");
+        instructText.setString(
+            "Enter expression (use . for AND, + for OR, ~ for NOT, ^ for "
+            "XOR)\nPress Enter to submit, or click CLOSE to hide");
         instructText.setCharacterSize(10);
         instructText.setFillColor(sf::Color(128, 128, 128));
         instructText.setPosition({rightSide + 10.f, 400.f});
@@ -510,37 +458,8 @@ void Simulator::drawUI(sf::RenderWindow &window) const {
         closeText.setPosition({rightSide + 320.f, 360.f});
         window.draw(closeText);
     }
-    window.draw(*inputFieldBg);
 
-    inputFieldText->setPosition({rightSide + 10.f, 360.f});
-    window.draw(*inputFieldText);
-
-    sf::Text instructText(*currentFont);
-    instructText.setString(
-        "Enter expression (use . for AND, + for OR, ~ for NOT, ^ for "
-        "XOR)\nPress Enter to submit, or click CLOSE to hide");
-    instructText.setCharacterSize(10);
-    instructText.setFillColor(sf::Color(128, 128, 128));
-    instructText.setPosition({rightSide + 10.f, 400.f});
-    window.draw(instructText);
-
-    // Draw close button
-    sf::RectangleShape closeBtn({60.f, 20.f});
-    closeBtn.setPosition({rightSide + 310.f, 355.f});
-    closeBtn.setFillColor(sf::Color::Red);
-    closeBtn.setOutlineThickness(1.f);
-    closeBtn.setOutlineColor(sf::Color::White);
-    window.draw(closeBtn);
-
-    sf::Text closeText(*currentFont);
-    closeText.setString("CLOSE");
-    closeText.setCharacterSize(12);
-    closeText.setFillColor(sf::Color::White);
-    closeText.setPosition({rightSide + 320.f, 360.f});
-    window.draw(closeText);
-  }
-
-  window.setView(originalView);
+    window.setView(originalView);
 }
 
 std::vector<size_t> Simulator::getInputGates() const {
@@ -550,8 +469,7 @@ std::vector<size_t> Simulator::getInputGates() const {
             inputs.push_back(i);
         }
     }
-  }
-  return inputs;
+    return inputs;
 }
 
 std::vector<size_t> Simulator::getOutputGates() const {
@@ -561,8 +479,7 @@ std::vector<size_t> Simulator::getOutputGates() const {
             outputs.push_back(i);
         }
     }
-  }
-  return outputs;
+    return outputs;
 }
 
 void Simulator::generateLogicalExpression() {
@@ -579,19 +496,19 @@ void Simulator::generateLogicalExpression() {
         return;
     }
 
-  std::map<size_t, std::string> expressions;
-  auto inputs = getInputGates();
+    std::map<size_t, std::string> expressions;
+    auto inputs = getInputGates();
 
     for (size_t i = 0; i < inputs.size(); ++i) {
         char varName = 'A' + i;
         expressions[inputs[i]] = std::string(1, varName);
     }
 
-  currentExpression = generateExpressionForGate(outputs[0], expressions);
-  showExpression = true;
-  setupUITexts();
+    currentExpression = generateExpressionForGate(outputs[0], expressions);
+    showExpression = true;
+    setupUITexts();
 
-  std::cout << "Generated expression: " << currentExpression << std::endl;
+    std::cout << "Generated expression: " << currentExpression << std::endl;
 }
 
 std::string Simulator::generateExpressionForGate(size_t gateIndex, std::map<size_t, std::string> &expressions) const {
@@ -679,8 +596,8 @@ void Simulator::generateTruthTable() {
         return;
     }
 
-  auto inputs = getInputGates();
-  auto outputs = getOutputGates();
+    auto inputs = getInputGates();
+    auto outputs = getOutputGates();
 
     if (inputs.empty() || outputs.empty()) {
         truthTable = {"No inputs or outputs found"};
@@ -689,7 +606,7 @@ void Simulator::generateTruthTable() {
         return;
     }
 
-    const_cast<Simulator *>(this)->evaluateCircuit();
+    truthTable.clear();
 
     std::string header;
     for (size_t i = 0; i < inputs.size(); ++i) {
@@ -699,11 +616,13 @@ void Simulator::generateTruthTable() {
     for (size_t i = 0; i < outputs.size(); ++i) {
         header += "Out" + std::to_string(i) + " ";
     }
-    truthTable.push_back(row);
-  }
+    truthTable.push_back(header);
 
-  showTruthTable = true;
-  setupUITexts();
+    std::string separator(header.length(), '-');
+    truthTable.push_back(separator);
+
+    int numInputs = inputs.size();
+    int combinations = 1 << numInputs;
 
     for (int combo = 0; combo < combinations; ++combo) {
         for (int i = 0; i < numInputs; ++i) {
@@ -758,9 +677,11 @@ void Simulator::generateExpressionTruthTable() {
     for (char var : variables) {
         header += std::string(1, var) + "  ";
     }
+    header += "| " + expression;
+    truthTable.push_back(header);
 
-    bool result = evaluatePostfix(postfix);
-    minterms.push_back(result);
+    std::string separator(header.length(), '-');
+    truthTable.push_back(separator);
 
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < varCount; j++) {
@@ -777,18 +698,14 @@ void Simulator::generateExpressionTruthTable() {
         row += "|  " + std::string(result ? "1" : "0");
         truthTable.push_back(row);
     }
-    row += "|  " + std::string(result ? "1" : "0");
-    truthTable.push_back(row);
-  }
 
-  showTruthTable = true;
-  currentExpression = simplifyExpression();
-  showExpression = true;
-  setupUITexts();
+    showTruthTable = true;
+    currentExpression = simplifyExpression();
+    showExpression = true;
+    setupUITexts();
 
-  std::cout << "Generated truth table for expression: " << expression
-            << std::endl;
-  std::cout << "Simplified expression: " << currentExpression << std::endl;
+    std::cout << "Generated truth table for expression: " << expression << std::endl;
+    std::cout << "Simplified expression: " << currentExpression << std::endl;
 }
 
 void Simulator::setFont(const sf::Font &font) {
@@ -905,18 +822,9 @@ std::string Simulator::infixToPostfix(const std::string &infix) {
     while (!s.empty()) {
         postfix += s.top();
         s.pop();
-      }
-      s.push(c);
     }
-  }
 
-  while (!s.empty())
-  {
-    postfix += s.top();
-    s.pop();
-  }
-
-  return postfix;
+    return postfix;
 }
 
 bool Simulator::evaluatePostfix(const std::string &postfix) {
@@ -937,9 +845,8 @@ bool Simulator::evaluatePostfix(const std::string &postfix) {
             s.push(applyOperation(a, b, c));
         }
     }
-  }
 
-  return s.top();
+    return s.top();
 }
 
 std::string Simulator::getBinaryString(int num, int length) {
@@ -995,13 +902,6 @@ std::string Simulator::simplifyExpression() {
         if (minterms[i]) {
             binaryMinterms.insert(getBinaryString(i, variables.size()));
         }
-        ++it2;
-      }
-      if (!combined && used.find(*it1) == used.end())
-      {
-        newImplicants.insert(*it1);
-      }
-      ++it1;
     }
 
     std::set<std::string> primeImplicants = binaryMinterms;
@@ -1035,9 +935,9 @@ std::string Simulator::simplifyExpression() {
             ++it1;
         }
 
-  if (!result.empty())
-    result = result.substr(0, result.size() - 3);
-    
+        primeImplicants = newImplicants;
+    } while (changed);
+
     std::string result;
     for (const std::string &term : primeImplicants) {
         std::string expr = termToExpression(term);
@@ -1063,9 +963,8 @@ std::string Simulator::simplifyExpression() {
             return std::string(1, variables[0]) + " ^ " + std::string(1, variables[1]);
         }
     }
-  }
 
-  return result.empty() ? "0" : result;
+    return result.empty() ? "0" : result;
 }
 
 void Simulator::readExpression() {
