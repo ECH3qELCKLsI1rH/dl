@@ -6,19 +6,10 @@
 #include "../engine/Gate.h"
 
 class ComponentPalette {
-   public:
-    ComponentPalette();
-    void setFont(const sf::Font &font);
-    void handleEvent(const sf::Event &event, const sf::RenderWindow &window);
-    void update();
-    void draw(sf::RenderWindow &window);
-    GateType getSelectedGateType() const;
-
    private:
     void setupButtons();
     void setupTexts();
     std::string getGateTypeName(GateType type) const;
-
     std::vector<sf::RectangleShape> buttons;
     std::vector<GateType> gateTypes;
     int selectedIndex = 0;
@@ -28,4 +19,12 @@ class ComponentPalette {
     std::optional<sf::Text> titleText;
     std::vector<sf::Text> buttonLabels;
     std::vector<sf::Text> instructionTexts;
+
+   public:
+    ComponentPalette();
+    void setFont(const sf::Font &font);
+    void handleEvent(const sf::Event &event, const sf::RenderWindow &window);
+    void update();
+    void draw(sf::RenderWindow &window);
+    GateType getSelectedGateType() const;
 };
