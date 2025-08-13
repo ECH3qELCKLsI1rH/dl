@@ -4,7 +4,6 @@
 #include "ui/ComponentPalette.h"
 #include "ui/Menu.h"
 #include "engine/Simulator.h"
-
 #include <string>
 
 void LoadFont(sf::Font &font, std::string str)
