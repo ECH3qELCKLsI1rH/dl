@@ -1,13 +1,10 @@
 #include <SFML/Graphics.hpp>
-#include <iostream>
 #include <optional>
 #include <string>
-
 #include "engine/Simulator.h"
 #include "ui/Canvas.h"
 #include "ui/ComponentPalette.h"
 #include "ui/Menu.h"
-#include <string>
 
 void LoadFont(sf::Font &font, std::string str)
 {
@@ -118,9 +115,7 @@ int main() {
         canvas.draw(window);
         palette.draw(window);
         simulator.drawUI(window);
-
         menu.draw(window);
-
         window.display();
     }
 
