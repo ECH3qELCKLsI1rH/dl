@@ -3,17 +3,6 @@
 #include <optional>
 
 class Menu {
-   public:
-    Menu();
-
-    void handleEvent(const sf::Event &event, sf::RenderWindow &window);
-    void draw(sf::RenderWindow &window);
-    void setFont(const sf::Font &font);
-
-    bool isVisible() const { return visible; }
-    void setVisible(bool vis) { visible = vis; }
-    bool shouldQuit() const { return quit; }
-
    private:
     bool visible = false;
     bool quit = false;
@@ -32,4 +21,15 @@ class Menu {
 
     void setupMenu();
     void setupTexts();
+
+   public:
+    Menu();
+
+    void handleEvent(const sf::Event &event, sf::RenderWindow &window);
+    void draw(sf::RenderWindow &window);
+    void setFont(const sf::Font &font);
+
+    bool isVisible() const { return visible; }
+    void setVisible(bool vis) { visible = vis; }
+    bool shouldQuit() const { return quit; }
 };
