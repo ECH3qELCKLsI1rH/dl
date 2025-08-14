@@ -11,9 +11,9 @@ class ComponentPalette {
     void setupTexts();
     std::string getGateTypeName(GateType type) const;
     std::vector<sf::RectangleShape> buttons;
-    std::vector<GateType> gateTypes;
-    int selectedIndex = 0;
-    int hoveredIndex = -1;
+    std::vector<GateType> type;
+    int selectedIndex = 0;  // input is selected by default so 0
+    int hoveredIndex = -1;  // nothing is hovered so -1 (out of index)
     sf::View uiView;
     const sf::Font *currentFont = nullptr;
     std::optional<sf::Text> titleText;

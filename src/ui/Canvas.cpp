@@ -72,7 +72,7 @@ void Canvas::drawGrid(sf::RenderWindow &window) {
 }
 
 void Canvas::draw(sf::RenderWindow &window) {
-    window.setView(view);    // sets the camera of the window to "view"
-    drawGrid(window);        // draws the grid layout
-    simulator.draw(window);  // draw all simulation elements on the canvas
+    window.setView(view);  // sets the camera of the window to "view"
+    drawGrid(window);      // draws the grid layout
+    simulator.draw(window);
 }

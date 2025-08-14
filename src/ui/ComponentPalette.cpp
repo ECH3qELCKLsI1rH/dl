@@ -3,29 +3,26 @@
 #include <iostream>
 
 ComponentPalette::ComponentPalette() {
-    uiView = sf::View({600.f, 400.f}, {1200.f, 800.f});
-    gateTypes = {GateType::INPUT, GateType::AND, GateType::OR, GateType::NOT, GateType::OUTPUT};
+    uiView = sf::View({600.f, 400.f}, {1200.f, 800.f});                                      // coordinate of center, size in px
+    type = {GateType::INPUT, GateType::AND, GateType::OR, GateType::NOT, GateType::OUTPUT};  // initializing the vector (of type GateType)
     setupButtons();
 }
 
 void ComponentPalette::setupButtons() {
     buttons.clear();
 
-    for (size_t i = 0; i < gateTypes.size(); ++i) {
-        sf::RectangleShape button({80.f, 40.f});
-        button.setPosition({20.f, 50.f + i * 50.f});
-
-        // Set button color: selected > hovered > default
-        if (static_cast<int>(i) == selectedIndex) {
-            button.setFillColor(sf::Color::Yellow);
-        } else if (static_cast<int>(i) == hoveredIndex) {
-            button.setFillColor(sf::Color(220, 220, 220));
+    for (int i = 0; i < type.size(); ++i) {
+        sf::RectangleShape button({80.f, 40.f});      // for input, and, or, not, output of size (80x40)px
+        button.setPosition({20.f, 50.f + i * 50.f});  // set position 20px right and 50px below the top for every button
+        if (i == selectedIndex) {
+            button.setFillColor(sf::Color::Yellow);  // if button is selectes ,yellow
+        } else if (i == hoveredIndex) {
+            button.setFillColor(sf::Color(220, 220, 220));  // if button is selectes ,gray
         } else {
-            button.setFillColor(sf::Color::White);
+            button.setFillColor(sf::Color::White);  // default color
         }
-
-        button.setOutlineThickness(2.f);
-        button.setOutlineColor(sf::Color::Black);
+        button.setOutlineThickness(2.f);           // button ko border thickness
+        button.setOutlineColor(sf::Color::Black);  // button ko border color
         buttons.push_back(button);
     }
 
@@ -45,9 +42,9 @@ void ComponentPalette::setupTexts() {
     buttonLabels.clear();
     instructionTexts.clear();
 
-    for (size_t i = 0; i < gateTypes.size(); ++i) {
+    for (size_t i = 0; i < type.size(); ++i) {
         sf::Text label(*currentFont);
-        label.setString(getGateTypeName(gateTypes[i]));
+        label.setString(getGateTypeName(type[i]));
         label.setCharacterSize(14);
         label.setFillColor(sf::Color::Black);
 
@@ -178,4 +175,4 @@ void ComponentPalette::draw(sf::RenderWindow &window) {
     }
 }
 
-GateType ComponentPalette::getSelectedGateType() const { return gateTypes[selectedIndex]; }
+GateType ComponentPalette::getSelectedGateType() const { return type[selectedIndex]; }
