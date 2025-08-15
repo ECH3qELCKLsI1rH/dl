@@ -292,7 +292,7 @@ void Simulator::evaluateCircuit() {
                 inputs.push_back(inputValue);
             }
 
-            if (allInputsReady && inputs.size() == inputCount) {
+            if (allInputsReady) {
                 gates[i].setState(gates[i].evaluate(inputs));
                 evaluated[i] = true;
                 progress = true;

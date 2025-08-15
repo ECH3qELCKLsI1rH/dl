@@ -47,7 +47,7 @@ ComponentPalette::ComponentPalette() {
     uiView.setCenter(paletteSize / 2.f);
     uiView.setViewport(sf::FloatRect({0, 0}, {WindowConfig::PALETTE_SCALE, 1}));
 
-    type = {GateType::INPUT, GateType::AND, GateType::OR, GateType::NOT, GateType::NAND, GateType::NOR, GateType::EXOR, GateType::OUTPUT};
+    type = {GateType::INPUT, GateType::AND, GateType::OR, GateType::NOT, GateType::NAND, GateType::NOR, GateType::XOR, GateType::OUTPUT};
     setupButtons();
 }
 
@@ -211,8 +211,8 @@ std::string ComponentPalette::getGateTypeName(GateType type) const {
             return "NAND";
         case GateType::NOR:
             return "NOR";
-        case GateType::EXOR:
-            return "EXOR";
+        case GateType::XOR:
+            return "XOR";
         case GateType::OUTPUT:
             return "OUTPUT";
         default:
