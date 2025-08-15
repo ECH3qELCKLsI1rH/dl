@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-enum class GateType { AND, OR, NOT, INPUT, OUTPUT };
+enum class GateType { AND, OR, NOT, NAND, NOR, EXOR, INPUT, OUTPUT };
 
 class Gate {
    private:
