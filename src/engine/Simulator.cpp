@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <iostream>
 
+#include "../ui/Configuration.h"
+
 void Simulator::handleEvent(const sf::Event &event, const sf::RenderWindow &window, const sf::View &view, GateType selectedGateType) {
     if (const auto *clicked = event.getIf<sf::Event::MouseButtonPressed>()) {
         if (clicked->button == sf::Mouse::Button::Left) {
@@ -38,7 +40,7 @@ void Simulator::handleEvent(const sf::Event &event, const sf::RenderWindow &wind
             }
 
             // Skip if click is in the palette area
-            if (mousePos.x <= 120.f) return;
+            if (mousePos.x <= WindowConfig::getPaletteSize().x) return;
 
             sf::Vector2f worldPos = window.mapPixelToCoords(mousePixel, view);
 
