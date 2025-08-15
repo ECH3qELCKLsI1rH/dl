@@ -3,9 +3,9 @@
 
 class WindowConfig {
    public:
-    static constexpr float SCREEN_SCALE = 0.8f;   // 80% of screen
-    static constexpr float PALETTE_SCALE = 0.2f;  // 30% of window
-    static constexpr float CANVAS_SCALE = 0.8f;   // 70% of window
+    static constexpr float SCREEN_SCALE = 1.f;     // 80% of screen
+    static constexpr float PALETTE_SCALE = 0.16f;  // 16% of window
+    static constexpr float CANVAS_SCALE = 0.84f;   // 84% of window
 
     static sf::Vector2f getWindowSize() {
         sf::VideoMode desktop = sf::VideoMode::getDesktopMode();

@@ -6,48 +6,41 @@
 
 // =================== UI CONSTANTS =================== //
 namespace {
-// Palette dimensions
-const float BUTTON_WIDTH = 120.f;
-const float BUTTON_HEIGHT = 60.f;
-const float BUTTON_X_OFFSET = 50.f;   // from left
-const float BUTTON_Y_START = 50.f;    // first button vertical start
-const float BUTTON_Y_SPACING = 60.f;  // distance between buttons
 
-// Title bar
-const float TITLE_BG_WIDTH = 200.f;
-const float TITLE_BG_HEIGHT = 60.f;
-const float TITLE_X = 50.f;
-const float TITLE_Y = 20.f;
-const unsigned int TITLE_FONT_SIZE = 20;
+// Variables
+const float LEFT_MARGIN = 50.f;  // left margin
+const float TOP_MARGIN = 40.f;   // vertical space
+const float SPACING = 25.f;      // vertical space
 
-// Text
-const unsigned int LABEL_FONT_SIZE = 20;
-const unsigned int INSTRUCTION_FONT_SIZE = 16;
+// Spacing
+const float BOX_WIDTH = 180.f;                         // box width
+const float BOX_HEIGHT = 60.f;                         // box height
+const float BOX_Y_SPACING = BOX_HEIGHT + SPACING;      // distance between boxes
+const float BOX_Y_START = BOX_Y_SPACING + TOP_MARGIN;  // first button Y start
 
-// Instruction positioning
-const float INSTRUCTION_X = 20.f;
-const float INSTRUCTION_Y_START = 500.f;
-const float INSTRUCTION_Y_SPACING = 20.f;
+// Font Sizes
+const unsigned int FONT_TITLE = 20;
+const unsigned int FONT_LABEL = 18;
+const unsigned int FONT_INSTRUCTION = 18;
 
 // Colors
 const sf::Color COLOR_SELECTED = sf::Color::Yellow;
-const sf::Color COLOR_HOVERED(220, 220, 220);
+const sf::Color COLOR_HOVERED = sf::Color(220, 220, 220);
 const sf::Color COLOR_DEFAULT = sf::Color::White;
-const sf::Color COLOR_BUTTON_OUTLINE = sf::Color::Black;
-const float BUTTON_OUTLINE_THICKNESS = 2.f;
+const sf::Color COLOR_OUTLINE = sf::Color::Black;
 
+const sf::Color COLOR_BG = sf::Color(200, 200, 200, 200);
 const sf::Color COLOR_TITLE_BG = sf::Color::Black;
-const sf::Color COLOR_TITLE_OUTLINE = sf::Color::White;
 const sf::Color COLOR_TITLE_TEXT = sf::Color::White;
 const sf::Color COLOR_LABEL_TEXT = sf::Color::Black;
-const sf::Color COLOR_INSTRUCTION_TEXT = sf::Color::Black;
-const sf::Color COLOR_BACKGROUND(200, 200, 200, 200);
+const sf::Color COLOR_INSTR_TEXT = sf::Color::Black;
+
+const float OUTLINE_THICKNESS = 2.f;
+
 }  // namespace
 
 ComponentPalette::ComponentPalette() {
     sf::Vector2f paletteSize = WindowConfig::getPaletteSize();
-
-    // Create view for the palette area
     uiView.setSize(paletteSize);
     uiView.setCenter(paletteSize / 2.f);
     uiView.setViewport(sf::FloatRect({0, 0}, {WindowConfig::PALETTE_SCALE, 1}));
@@ -59,24 +52,24 @@ ComponentPalette::ComponentPalette() {
 void ComponentPalette::setupButtons() {
     buttons.clear();
 
-    for (int i = 0; i < static_cast<int>(type.size()); ++i) {
-        sf::RectangleShape button({BUTTON_WIDTH, BUTTON_HEIGHT});
-        button.setPosition({BUTTON_X_OFFSET, BUTTON_Y_START + i * BUTTON_Y_SPACING});
-        if (i == selectedIndex) {
-            button.setFillColor(COLOR_SELECTED);  // if button is selected, yellow
-        } else if (i == hoveredIndex) {
-            button.setFillColor(COLOR_HOVERED);  // if button is hovered, gray
-        } else {
-            button.setFillColor(COLOR_DEFAULT);  // default color
-        }
-        button.setOutlineThickness(BUTTON_OUTLINE_THICKNESS);  // button border thickness
-        button.setOutlineColor(COLOR_BUTTON_OUTLINE);          // button border color
+    for (size_t i = 0; i < type.size(); ++i) {
+        sf::RectangleShape button({BOX_WIDTH, BOX_HEIGHT});
+        button.setPosition({LEFT_MARGIN, BOX_Y_START + i * BOX_Y_SPACING});
+
+        if (i == selectedIndex)
+            button.setFillColor(COLOR_SELECTED);
+        else if (i == hoveredIndex)
+            button.setFillColor(COLOR_HOVERED);
+        else
+            button.setFillColor(COLOR_DEFAULT);
+
+        button.setOutlineThickness(OUTLINE_THICKNESS);
+        button.setOutlineColor(COLOR_OUTLINE);
+
         buttons.push_back(button);
     }
 
-    if (currentFont != nullptr) {
-        setupTexts();
-    }
+    if (currentFont != nullptr) setupTexts();
 }
 
 void ComponentPalette::setFont(const sf::Font &font) {
@@ -85,41 +78,50 @@ void ComponentPalette::setFont(const sf::Font &font) {
 }
 
 void ComponentPalette::setupTexts() {
-    if (currentFont == nullptr) return;
+    if (!currentFont) return;
 
     buttonLabels.clear();
     instructionTexts.clear();
 
+    // Button labels
     for (size_t i = 0; i < type.size(); ++i) {
         sf::Text label(*currentFont);
         label.setString(getGateTypeName(type[i]));
-        label.setCharacterSize(LABEL_FONT_SIZE);
+        label.setCharacterSize(FONT_LABEL);
         label.setFillColor(COLOR_LABEL_TEXT);
 
-        sf::Vector2f buttonPos = buttons[i].getPosition();
-        sf::Vector2f buttonSize = buttons[i].getSize();
-        sf::FloatRect textBounds = label.getLocalBounds();
-        label.setPosition({buttonPos.x + (buttonSize.x - textBounds.size.x) / 2.f, buttonPos.y + (buttonSize.y - textBounds.size.y) / 2.f});
+        sf::Vector2f pos = buttons[i].getPosition();
+        sf::Vector2f size = buttons[i].getSize();
+        sf::FloatRect bounds = label.getLocalBounds();
+
+        label.setPosition({pos.x + (size.x - bounds.size.x) / 2.f - bounds.position.x, pos.y + (size.y - bounds.size.y) / 2.f - bounds.position.y});
 
         buttonLabels.push_back(label);
     }
 
+    // Title text
     titleText = sf::Text(*currentFont);
     titleText->setString("Components");
-    titleText->setCharacterSize(TITLE_FONT_SIZE);
+    titleText->setCharacterSize(FONT_TITLE);
     titleText->setFillColor(COLOR_TITLE_TEXT);
-    titleText->setPosition({BUTTON_X_OFFSET, TITLE_Y});
 
-    std::vector<std::string> instructions = {"Controls:",   "T-Truth Table", "E-Expression", "I-Input Expr",
-                                             "F-File Menu", "C-Clear",       "Del-Delete",   "Q-Quit"};
+    sf::FloatRect tBounds = titleText->getLocalBounds();
+    titleText->setPosition({LEFT_MARGIN + (BOX_WIDTH - tBounds.size.x) / 2.f - tBounds.position.x,
+                            TOP_MARGIN + (BOX_HEIGHT - tBounds.size.y) / 2.f - tBounds.position.y});
+
+    // Instructions
+    float instrStartY = BOX_Y_START + type.size() * BOX_Y_SPACING + SPACING;
+    std::vector<std::string> instructions = {
+        "CONTROLS:",         "T ->        Truth Table", "E ->        Expression", "I ->        Input Expression", "F ->        File Menu",
+        "C ->        Clear", "Del ->        Delete",    "Q ->        Quit"};
 
     for (size_t i = 0; i < instructions.size(); ++i) {
-        sf::Text instrText(*currentFont);
-        instrText.setString(instructions[i]);
-        instrText.setCharacterSize(INSTRUCTION_FONT_SIZE);
-        instrText.setFillColor(COLOR_INSTRUCTION_TEXT);
-        instrText.setPosition({INSTRUCTION_X, INSTRUCTION_Y_START + i * INSTRUCTION_Y_SPACING});
-        instructionTexts.push_back(instrText);
+        sf::Text instr(*currentFont);
+        instr.setString(instructions[i]);
+        instr.setCharacterSize(FONT_INSTRUCTION);
+        instr.setFillColor(COLOR_INSTR_TEXT);
+        instr.setPosition({LEFT_MARGIN, instrStartY + i * SPACING});
+        instructionTexts.push_back(instr);
     }
 }
 
@@ -127,31 +129,30 @@ void ComponentPalette::handleEvent(const sf::Event &event, const sf::RenderWindo
     if (event.is<sf::Event::MouseMoved>()) {
         sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
         sf::Vector2f mousePos = window.mapPixelToCoords(mousePixel, uiView);
+        int newHovered = -1;
 
-        int newHoveredIndex = -1;
-        if (mousePos.x >= BUTTON_X_OFFSET && mousePos.x <= BUTTON_X_OFFSET + BUTTON_WIDTH) {
+        if (mousePos.x >= LEFT_MARGIN && mousePos.x <= LEFT_MARGIN + BOX_WIDTH) {
             for (size_t i = 0; i < buttons.size(); ++i) {
                 if (buttons[i].getGlobalBounds().contains(mousePos)) {
-                    newHoveredIndex = static_cast<int>(i);
+                    newHovered = static_cast<int>(i);
                     break;
                 }
             }
         }
 
-        if (newHoveredIndex != hoveredIndex) {
-            hoveredIndex = newHoveredIndex;
+        if (newHovered != hoveredIndex) {
+            hoveredIndex = newHovered;
             setupButtons();
         }
     }
 
-    if (const auto *clicked = event.getIf<sf::Event::MouseButtonPressed>()) {
+    if (auto clicked = event.getIf<sf::Event::MouseButtonPressed>()) {
         if (clicked->button == sf::Mouse::Button::Left) {
-            sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
-            sf::Vector2f mousePos = window.mapPixelToCoords(mousePixel, uiView);
-
-            if (mousePos.x >= BUTTON_X_OFFSET && mousePos.x <= BUTTON_X_OFFSET + BUTTON_WIDTH) {
+            sf::Vector2i mp = sf::Mouse::getPosition(window);
+            sf::Vector2f pos = window.mapPixelToCoords(mp, uiView);
+            if (pos.x >= LEFT_MARGIN && pos.x <= LEFT_MARGIN + BOX_WIDTH) {
                 for (size_t i = 0; i < buttons.size(); ++i) {
-                    if (buttons[i].getGlobalBounds().contains(mousePos)) {
+                    if (buttons[i].getGlobalBounds().contains(pos)) {
                         selectedIndex = static_cast<int>(i);
                         setupButtons();
                         break;
@@ -168,38 +169,30 @@ void ComponentPalette::draw(sf::RenderWindow &window) {
     window.setView(uiView);
 
     // Background
-    sf::Vector2f paletteSize = WindowConfig::getPaletteSize();
-    sf::RectangleShape background(paletteSize);
-    background.setPosition({0.f, 0.f});
-    background.setFillColor(COLOR_BACKGROUND);
-    window.draw(background);
+    sf::RectangleShape bg(WindowConfig::getPaletteSize());
+    bg.setFillColor(COLOR_BG);
+    bg.setPosition({0.f, 0.f});
+    window.draw(bg);
 
-    // Title Background
-    sf::RectangleShape titleBg({TITLE_BG_WIDTH, TITLE_BG_HEIGHT});
-    titleBg.setPosition({TITLE_X, TITLE_Y});
+    // Title background
+    sf::RectangleShape titleBg({BOX_WIDTH, BOX_HEIGHT});
+    titleBg.setPosition({LEFT_MARGIN, BOX_Y_START - BOX_HEIGHT - SPACING});
     titleBg.setFillColor(COLOR_TITLE_BG);
-    titleBg.setOutlineThickness(1.f);
-    titleBg.setOutlineColor(COLOR_TITLE_OUTLINE);
+    titleBg.setOutlineThickness(OUTLINE_THICKNESS);
+    titleBg.setOutlineColor(COLOR_OUTLINE);
     window.draw(titleBg);
 
-    // Title
-    if (currentFont != nullptr && titleText.has_value()) {
-        window.draw(titleText.value());
-    }
+    if (currentFont && titleText.has_value()) window.draw(titleText.value());
 
     // Buttons
     for (size_t i = 0; i < buttons.size(); ++i) {
         window.draw(buttons[i]);
-        if (currentFont != nullptr && i < buttonLabels.size()) {
-            window.draw(buttonLabels[i]);
-        }
+        if (currentFont && i < buttonLabels.size()) window.draw(buttonLabels[i]);
     }
 
     // Instructions
-    if (currentFont != nullptr) {
-        for (const auto &instrText : instructionTexts) {
-            window.draw(instrText);
-        }
+    if (currentFont) {
+        for (auto &instr : instructionTexts) window.draw(instr);
     }
 }
 
