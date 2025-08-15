@@ -1,3 +1,5 @@
+// engine/Gate.cpp
+
 #include "Gate.h"
 
 Gate::Gate(GateType type, sf::Vector2f position) : type(type), position(position) {

@@ -1,3 +1,5 @@
+// ui/ComponentPalette.cpp
+
 #include "ComponentPalette.h"
 
 #include <iostream>
@@ -111,9 +113,8 @@ void ComponentPalette::setupTexts() {
 
     // Instructions
     float instrStartY = BOX_Y_START + type.size() * BOX_Y_SPACING + SPACING;
-    std::vector<std::string> instructions = {
-        "CONTROLS:",         "T ->        Truth Table", "E ->        Expression", "I ->        Input Expression", "F ->        File Menu",
-        "C ->        Clear", "Del ->        Delete",    "Q ->        Quit"};
+    std::vector<std::string> instructions = {"CONTROLS:",   "T      Truth Table", "E      Expression", "I       Input Expression",
+                                             "C     Clear", "Del   Delete",       "Q     Quit"};
 
     for (size_t i = 0; i < instructions.size(); ++i) {
         sf::Text instr(*currentFont);

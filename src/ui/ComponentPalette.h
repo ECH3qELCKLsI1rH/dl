@@ -1,3 +1,5 @@
+// ui/ComponentPalette.h
+
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <optional>
