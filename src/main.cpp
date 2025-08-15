@@ -5,6 +5,7 @@
 #include "engine/Simulator.h"
 #include "ui/Canvas.h"
 #include "ui/ComponentPalette.h"
+#include "ui/Configuration.h"
 #include "ui/Menu.h"
 
 void LoadFont(sf::Font &font, std::string str) {
@@ -14,13 +15,12 @@ void LoadFont(sf::Font &font, std::string str) {
 }
 
 int main() {
+    sf::Vector2f windowSize = WindowConfig::getWindowSize();
     sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
-    unsigned int width = static_cast<unsigned int>(desktop.size.x * 0.8f);
-    unsigned int height = static_cast<unsigned int>(desktop.size.y * 0.8f);
+    sf::RenderWindow window(sf::VideoMode({static_cast<unsigned int>(windowSize.x), static_cast<unsigned int>(windowSize.y)}), "Digital Logic Suite",
+                            sf::Style::Default);
 
-    sf::RenderWindow window(sf::VideoMode({width, height}), "Digital Logic Suite", sf::Style::Default);
-
-    window.setPosition({static_cast<int>((desktop.size.x - width) / 2), static_cast<int>((desktop.size.y - height) / 2)});
+    window.setPosition({static_cast<int>((desktop.size.x - windowSize.x) / 2), static_cast<int>((desktop.size.y - windowSize.y) / 2)});
 
     Simulator simulator;
     Canvas canvas(simulator);

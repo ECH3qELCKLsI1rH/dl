@@ -2,9 +2,17 @@
 
 #include <iostream>
 
+#include "Configuration.h"
+
 ComponentPalette::ComponentPalette() {
-    uiView = sf::View({600.f, 400.f}, {1200.f, 800.f});                                      // coordinate of center, size in px
-    type = {GateType::INPUT, GateType::AND, GateType::OR, GateType::NOT, GateType::OUTPUT};  // initializing the vector (of type GateType)
+    sf::Vector2f paletteSize = WindowConfig::getPaletteSize();
+
+    // Create view for the palette area
+    uiView.setSize(paletteSize);
+    uiView.setCenter(paletteSize / 2.f);
+    uiView.setViewport(sf::FloatRect({0, 0}, {WindowConfig::PALETTE_SCALE, 1}));
+
+    type = {GateType::INPUT, GateType::AND, GateType::OR, GateType::NOT, GateType::OUTPUT};
     setupButtons();
 }
 
@@ -15,14 +23,14 @@ void ComponentPalette::setupButtons() {
         sf::RectangleShape button({80.f, 40.f});      // for input, and, or, not, output of size (80x40)px
         button.setPosition({20.f, 50.f + i * 50.f});  // set position 20px right and 50px below the top for every button
         if (i == selectedIndex) {
-            button.setFillColor(sf::Color::Yellow);  // if button is selectes ,yellow
+            button.setFillColor(sf::Color::Yellow);  // if button is selected, yellow
         } else if (i == hoveredIndex) {
-            button.setFillColor(sf::Color(220, 220, 220));  // if button is selectes ,gray
+            button.setFillColor(sf::Color(220, 220, 220));  // if button is hovered, gray
         } else {
             button.setFillColor(sf::Color::White);  // default color
         }
-        button.setOutlineThickness(2.f);           // button ko border thickness
-        button.setOutlineColor(sf::Color::Black);  // button ko border color
+        button.setOutlineThickness(2.f);           // button border thickness
+        button.setOutlineColor(sf::Color::Black);  // button border color
         buttons.push_back(button);
     }
 
@@ -62,9 +70,8 @@ void ComponentPalette::setupTexts() {
     titleText->setFillColor(sf::Color::White);
     titleText->setPosition({15.f, 15.f});
 
-    std::vector<std::string> instructions = {
-        "Controls:", "T-Truth Table", "E-Expression", "I-Input Expr", "F-File Menu", "C-Clear", "Del-Delete", "Esc-Cancel", "Q-Quit",
-    };
+    std::vector<std::string> instructions = {"Controls:", "T-Truth Table", "E-Expression", "I-Input Expr", "F-File Menu",
+                                             "C-Clear",   "Del-Delete",    "Esc-Cancel",   "Q-Quit"};
 
     for (size_t i = 0; i < instructions.size(); ++i) {
         sf::Text instrText(*currentFont);
@@ -76,25 +83,7 @@ void ComponentPalette::setupTexts() {
     }
 }
 
-std::string ComponentPalette::getGateTypeName(GateType type) const {
-    switch (type) {
-        case GateType::INPUT:
-            return "INPUT";
-        case GateType::AND:
-            return "AND";
-        case GateType::OR:
-            return "OR";
-        case GateType::NOT:
-            return "NOT";
-        case GateType::OUTPUT:
-            return "OUTPUT";
-        default:
-            return "UNKNOWN";
-    }
-}
-
 void ComponentPalette::handleEvent(const sf::Event &event, const sf::RenderWindow &window) {
-    // Handle mouse move events for hover
     if (event.is<sf::Event::MouseMoved>()) {
         sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
         sf::Vector2f mousePos = window.mapPixelToCoords(mousePixel, uiView);
@@ -112,11 +101,9 @@ void ComponentPalette::handleEvent(const sf::Event &event, const sf::RenderWindo
         if (newHoveredIndex != hoveredIndex) {
             hoveredIndex = newHoveredIndex;
             setupButtons();
-            // std::cout << "Hovered index: " << hoveredIndex << std::endl;
         }
     }
 
-    // Handle mouse click events for selection
     if (const auto *clicked = event.getIf<sf::Event::MouseButtonPressed>()) {
         if (clicked->button == sf::Mouse::Button::Left) {
             sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
@@ -127,7 +114,6 @@ void ComponentPalette::handleEvent(const sf::Event &event, const sf::RenderWindo
                     if (buttons[i].getGlobalBounds().contains(mousePos)) {
                         selectedIndex = static_cast<int>(i);
                         setupButtons();
-                        // std::cout << "Selected index: " << selectedIndex << std::endl;
                         break;
                     }
                 }
@@ -136,15 +122,13 @@ void ComponentPalette::handleEvent(const sf::Event &event, const sf::RenderWindo
     }
 }
 
-void ComponentPalette::update() {
-    // Update button states every frame to reflect hover and selection
-    setupButtons();
-}
+void ComponentPalette::update() { setupButtons(); }
 
 void ComponentPalette::draw(sf::RenderWindow &window) {
     window.setView(uiView);
 
-    sf::RectangleShape background({120.f, 800.f});
+    sf::Vector2f paletteSize = WindowConfig::getPaletteSize();
+    sf::RectangleShape background(paletteSize);
     background.setPosition({0.f, 0.f});
     background.setFillColor(sf::Color(200, 200, 200, 200));
     window.draw(background);
@@ -162,7 +146,6 @@ void ComponentPalette::draw(sf::RenderWindow &window) {
 
     for (size_t i = 0; i < buttons.size(); ++i) {
         window.draw(buttons[i]);
-
         if (currentFont != nullptr && i < buttonLabels.size()) {
             window.draw(buttonLabels[i]);
         }
@@ -172,6 +155,23 @@ void ComponentPalette::draw(sf::RenderWindow &window) {
         for (const auto &instrText : instructionTexts) {
             window.draw(instrText);
         }
+    }
+}
+
+std::string ComponentPalette::getGateTypeName(GateType type) const {
+    switch (type) {
+        case GateType::INPUT:
+            return "INPUT";
+        case GateType::AND:
+            return "AND";
+        case GateType::OR:
+            return "OR";
+        case GateType::NOT:
+            return "NOT";
+        case GateType::OUTPUT:
+            return "OUTPUT";
+        default:
+            return "UNKNOWN";
     }
 }
 
